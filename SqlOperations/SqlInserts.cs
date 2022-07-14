@@ -14,11 +14,10 @@ namespace SqlOperations
         public bool HasReferee { get; set; }
         public bool IsEnglish { get; set; }
 
-        public SqlInserts(string filePath, string databaseConnectionString, bool hasReferee = true, bool isEnglish = true)
+        public SqlInserts(string filePath, string databaseConnectionString, bool isEnglish)
         {
             FilePath = filePath;
             DatabaseConnectionString = databaseConnectionString;
-            HasReferee = hasReferee;
             IsEnglish = isEnglish;
         }
 
@@ -30,6 +29,23 @@ namespace SqlOperations
             using (SqlConnection con = new SqlConnection($"{DatabaseConnectionString}"))
             {
                 con.Open();
+
+                int idForCountry = 0;
+                string id = "";
+                if (IsEnglish)
+                    id = "England";
+                else
+                    id = "Germany";
+                var idForTeam = $"select Count(*) from Countries where name = ('{id}')";
+                using (var correctId = new SqlCommand(idForTeam, con))
+                {
+                    int rowExist = (int)correctId.ExecuteScalar();
+                    if (rowExist > 0)
+                    {
+                        idForCountry = rowExist;
+                        Console.WriteLine("Record exists!");
+                    }
+                }
                 using (StreamReader reader = new StreamReader($"{FilePath}"))
                 {
                     int counter = 0;
@@ -52,9 +68,9 @@ namespace SqlOperations
                 //otherwise we push it to the database with a message.
                 foreach (var item in result)
                 {
-                    var query = $"Select Count(*) from Teams where TeamName = ('{item}')";
+                    var query = $"Select Count(*) from Teams where TeamName = ('{item}') and CountryId = ('{idForCountry}')";
 
-                    var insert = $"insert into Teams(TeamName) values('{item}')";
+                    var insert = $"insert into Teams(TeamName,CountryId) values('{item}','{idForCountry}')";
                     using (var command = new SqlCommand(query, con))
                     {
                         int rowExist = (int)command.ExecuteScalar();
@@ -79,46 +95,87 @@ namespace SqlOperations
 
         public void PushToCountries()
         {
-            List<int> teamIds = new List<int>();
             string countryName = "";
             using (SqlConnection con = new SqlConnection($"{DatabaseConnectionString}"))
             {
                 con.Open();
-                var selectTeamsId = "Select Id from Teams";
-                using (var command = new SqlCommand(selectTeamsId, con))
+                if (IsEnglish)
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    countryName = "England";
+                }
+                else
+                {
+                    countryName = "Germany";
+                }
+                var query = $"select Count(*) From Countries where name = '{countryName}'";
+                var insert = $"insert into Countries(name) values('{countryName}')";
+                using (var selectCommand = new SqlCommand(query, con))
+                {
+                    var rowExist = (int)selectCommand.ExecuteScalar();
+                    if (rowExist > 0)
                     {
-                        while (reader.Read())
+                        Console.WriteLine("Record already exists!");
+                    }
+                    else if (rowExist == 0)
+                    {
+                        using (var insertCommand = new SqlCommand(insert, con))
                         {
-                            teamIds.Add(reader.GetInt32(0));
+                            insertCommand.ExecuteNonQuery();
+                            Console.WriteLine("Record Pushed to database!");
                         }
-                        reader.Close();
                     }
+                }
+                con.Close();
+            }
+        }
 
-                    if (IsEnglish)
+        public void PushToLeagues()
+        {
+            List<string> leagues = new List<string>();
+            string country = "";
+            using (StreamReader reader = new StreamReader($"{FilePath}"))
+            {
+                int counter = 0;
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(';', ',');
+                    if (values.Contains("Referee"))
                     {
-                        countryName = "England";
+                        country = "England";
                     }
-                    else
+                    if (counter > 0)
                     {
-                        countryName = "Germany";
+                        leagues.Add(values[0].ToString());
+                        break;
                     }
+                    counter++;
+                }
 
-                    foreach (var item in teamIds)
+            }
+
+            using (var con = new SqlConnection($"{DatabaseConnectionString}"))
+            {
+                con.Open();
+
+
+                var teamId = $"select Count(*) from Countries where name = ('{country}')";
+                using (var command = new SqlCommand(teamId, con))
+                {
+                    int rowExist = (int)command.ExecuteScalar();
+                    if (rowExist > 0)
                     {
-                        var query = $"select Count(*) From Countries where name = '{countryName}' and teamId = '{item}'";
-                        var insert = $"insert into Countries(name,teamId) values('{countryName}','{item}')";
-                        using (var selectCommand = new SqlCommand(query, con))
+                        Console.WriteLine("Found correct Id!");
+                        var insert = $"insert into Leagues(div,countryId) values('{leagues[0]}','{rowExist}')";
+                        var checkForDoubles = $"select count(*) from Leagues where div = ('{leagues[0]}') and countryId = ('{rowExist}')";
+                        using (var checkForDoublesCommand = new SqlCommand(checkForDoubles, con))
                         {
-                            var rowExist = (int)selectCommand.ExecuteScalar();
-                            if (rowExist > 0)
+                            int doubleExists = (int)checkForDoublesCommand.ExecuteScalar();
+                            if (doubleExists > 0)
                             {
-
-                                Console.WriteLine("Record already exists!");
-                                continue;
+                                Console.WriteLine("Duplicates found!");
                             }
-                            else if (rowExist == 0)
+                            else if (doubleExists == 0)
                             {
                                 using (var insertCommand = new SqlCommand(insert, con))
                                 {
@@ -129,7 +186,6 @@ namespace SqlOperations
                         }
                     }
                 }
-                con.Close();
             }
         }
     }
