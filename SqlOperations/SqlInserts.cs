@@ -338,6 +338,15 @@ namespace SqlOperations
                     else if(counter > 0)
                     {
                         MatchDate.Add(DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture));
+                        HomeTeam.Add(values[2]);
+                        AwayTeam.Add(values[3]);
+                        
+                        
+                        //TODO:
+                        //kolla upp i teams tabellen id för hometeam & awayteam => spara dessa värden
+                        //hämta in leagueId (funktion)
+                        //hämta in seasonsId => behöver leagueId, starDatum + slutDatum för säsong => skriv funktion för detta
+                        //om land == "Germany" => Referee till null
                     }
                     counter++;
                 }
