@@ -237,26 +237,12 @@ namespace SqlOperations
             {
                 con.Open();
 
-                //retrieving correvt id for the country
-                var checkWhichCountry = $"select count(*) from countries where name = ('{country}')";
-                using (var checkCountry = new SqlCommand(checkWhichCountry, con))
-                {
-                    int doubleExists = (int)checkCountry.ExecuteScalar();
-                    if (doubleExists > 0)
-                    {
-                        countryId = doubleExists;
-                    }
-                }
+                //retrieving correct id for the country
+                countryId = IdForCountry(country, countryId, con);
+                
                 //retrieving the leagueId
-                var checkForLeagueId = $"select count(*) from leagues where div = ('{div}') and countryId = ('{countryId}')";
-                using (var command = new SqlCommand(checkForLeagueId, con))
-                {
-                    int doubleExist = (int)command.ExecuteScalar();
-                    if (doubleExist > 0)
-                    {
-                        leagueId = doubleExist;
-                    }
-                }
+                leagueId = IdForLeague(div, countryId, leagueId, con);
+                
                 //checking for duplicates and pushing to database if no duplicates was found
                 var checkForDouble = $"select Count(*) from Seasons where startDate = ('{startDate}') and endDate = ('{endDate}') and leagueId = ('{leagueId}')";
                 using (var command = new SqlCommand(checkForDouble, con))
@@ -279,6 +265,34 @@ namespace SqlOperations
                 con.Close();
             }
 
+        }
+
+        private static int IdForLeague(string div, int countryId, int leagueId, SqlConnection con)
+        {
+            var checkForLeagueId = $"select count(*) from leagues where div = ('{div}') and countryId = ('{countryId}')";
+            using (var command = new SqlCommand(checkForLeagueId, con))
+            {
+                int doubleExist = (int)command.ExecuteScalar();
+                if (doubleExist > 0)
+                {
+                    leagueId = doubleExist;
+                }
+            }
+            return leagueId;
+        }
+
+        private static int IdForCountry(string country, int countryId, SqlConnection con)
+        {
+            var checkWhichCountry = $"select count(*) from countries where name = ('{country}')";
+            using (var checkCountry = new SqlCommand(checkWhichCountry, con))
+            {
+                int doubleExists = (int)checkCountry.ExecuteScalar();
+                if (doubleExists > 0)
+                {
+                    countryId = doubleExists;
+                }
+            }
+            return countryId;
         }
 
         public void PushDataToMatches()
@@ -325,10 +339,6 @@ namespace SqlOperations
                     {
                         MatchDate.Add(DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture));
                     }
-
-                   
-
-                   
                     counter++;
                 }
             }
