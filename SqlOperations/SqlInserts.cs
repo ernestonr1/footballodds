@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -185,6 +186,150 @@ namespace SqlOperations
                             }
                         }
                     }
+                }
+            }
+        }
+
+        public void PushDataToSeasons()
+        {
+            string div = "";
+            string start = "";
+            string end = "";
+            string country = "";
+            int countryId = 0;
+            int leagueId = 0;
+            var fileName = Path.GetFileNameWithoutExtension($"{FilePath}");
+            DateOnly startDate;
+            DateOnly endDate;
+
+            //parsing the end and startingdate to dateonly and country with correct value
+            using (StreamReader reader = new StreamReader($"{FilePath}"))
+            {
+                int counter = 0;
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(';', ',');
+
+                    if (counter == 1)
+                    {
+                        div = values[0].ToString();
+                        startDate = DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    }
+
+                    if (reader.EndOfStream)
+                    {
+                        endDate = DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    }
+                    counter++;
+                }
+            }
+
+            if (IsEnglish)
+                country = "England";
+            else
+                country = "Germany";
+
+
+
+
+            using (var con = new SqlConnection($"{DatabaseConnectionString}"))
+            {
+                con.Open();
+
+                //retrieving correvt id for the country
+                var checkWhichCountry = $"select count(*) from countries where name = ('{country}')";
+                using (var checkCountry = new SqlCommand(checkWhichCountry, con))
+                {
+                    int doubleExists = (int)checkCountry.ExecuteScalar();
+                    if (doubleExists > 0)
+                    {
+                        countryId = doubleExists;
+                    }
+                }
+                //retrieving the leagueId
+                var checkForLeagueId = $"select count(*) from leagues where div = ('{div}') and countryId = ('{countryId}')";
+                using (var command = new SqlCommand(checkForLeagueId, con))
+                {
+                    int doubleExist = (int)command.ExecuteScalar();
+                    if (doubleExist > 0)
+                    {
+                        leagueId = doubleExist;
+                    }
+                }
+                //checking for duplicates and pushing to database if no duplicates was found
+                var checkForDouble = $"select Count(*) from Seasons where startDate = ('{startDate}') and endDate = ('{endDate}') and leagueId = ('{leagueId}')";
+                using (var command = new SqlCommand(checkForDouble, con))
+                {
+                    var doubleExist = (int)command.ExecuteScalar();
+                    if (doubleExist > 0)
+                    {
+                        Console.WriteLine("Duplicates found!");
+                    }
+                    else if (doubleExist == 0)
+                    {
+                        var insertQuery = $"insert into seasons(startdate,enddate,seasonname,leagueid) values('{startDate}','{endDate}','{fileName}','{leagueId}')";
+                        using (var insert = new SqlCommand(insertQuery, con))
+                        {
+                            insert.ExecuteNonQuery();
+                            Console.WriteLine("Record Pushed to database!");
+                        }
+                    }
+                }
+                con.Close();
+            }
+
+        }
+
+        public void PushDataToMatches()
+        {
+            var country = "";
+            List<DateOnly> MatchDate = new List<DateOnly>();
+            List<string> HomeTeam = new List<string>();
+            List<string> AwayTeam = new List<string>();
+            List<int> FTHG = new List<int>();
+            List<int> FTAG = new List<int>();
+            List<string> FTR = new List<string>();
+            List<int> HTHG = new List<int>();
+            List<int> HTAG = new List<int>();
+            List<string> HTR = new List<string>();
+            List<string> Referee = new List<string>();
+            List<int> HS = new List<int>();
+            List<int> AS = new List<int>();
+            List<int> HST = new List<int>();
+            List<int> AST = new List<int>();
+            List<int> HF = new List<int>();
+            List<int> AF = new List<int>();
+            List<int> HC = new List<int>();
+            List<int> AC = new List<int>();
+            List<int> HY = new List<int>();
+            List<int> AY = new List<int>();
+            List<int> HR = new List<int>();
+            List<int> AR = new List<int>();
+            
+            using (StreamReader reader = new StreamReader($"{FilePath}"))
+            {
+                int counter = 0;
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(';', ',');
+                    if(counter == 0)
+                    {
+                        if (values.Contains("Referee"))
+                            country = "England";
+                        else
+                            country = "Germany";
+                    }
+                    else if(counter > 0)
+                    {
+                        MatchDate.Add(DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture));
+                    }
+
+                   
+
+                   
+                    counter++;
                 }
             }
         }
