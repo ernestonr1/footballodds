@@ -269,7 +269,7 @@ namespace SqlOperations
 
         private static int IdForLeague(string div, int countryId, int leagueId, SqlConnection con)
         {
-            var checkForLeagueId = $"select count(*) from leagues where div = ('{div}') and countryId = ('{countryId}')";
+            var checkForLeagueId = $"select id from leagues where div = ('{div}') and countryId = ('{countryId}')";
             using (var command = new SqlCommand(checkForLeagueId, con))
             {
                 int doubleExist = (int)command.ExecuteScalar();
@@ -283,7 +283,7 @@ namespace SqlOperations
 
         private static int IdForCountry(string country, int countryId, SqlConnection con)
         {
-            var checkWhichCountry = $"select count(*) from countries where name = ('{country}')";
+            var checkWhichCountry = $"select id from countries where name = ('{country}')";
             using (var checkCountry = new SqlCommand(checkWhichCountry, con))
             {
                 int doubleExists = (int)checkCountry.ExecuteScalar();
@@ -298,28 +298,38 @@ namespace SqlOperations
         public void PushDataToMatches()
         {
             var country = "";
-            List<DateOnly> MatchDate = new List<DateOnly>();
-            List<string> HomeTeam = new List<string>();
-            List<string> AwayTeam = new List<string>();
-            List<int> FTHG = new List<int>();
-            List<int> FTAG = new List<int>();
-            List<string> FTR = new List<string>();
-            List<int> HTHG = new List<int>();
-            List<int> HTAG = new List<int>();
-            List<string> HTR = new List<string>();
-            List<string> Referee = new List<string>();
-            List<int> HS = new List<int>();
-            List<int> AS = new List<int>();
-            List<int> HST = new List<int>();
-            List<int> AST = new List<int>();
-            List<int> HF = new List<int>();
-            List<int> AF = new List<int>();
-            List<int> HC = new List<int>();
-            List<int> AC = new List<int>();
-            List<int> HY = new List<int>();
-            List<int> AY = new List<int>();
-            List<int> HR = new List<int>();
-            List<int> AR = new List<int>();
+            int countryId = 0;
+            int leagueId = 0;
+            int seasonId = 0;
+            DateOnly MatchDate;
+            DateOnly StartDate;
+            DateOnly EndDate;
+            string HomeTeam = "";
+            string AwayTeam = "";
+            string div = "";
+            int homeTeamId = 0;
+            int awayTeamId = 0;
+
+
+            int FTHG = 0;
+            int FTAG = 0;
+            string FTR = "";
+            int HTHG = 0;
+            int HTAG = 0; 
+            string HTR = "";
+            string Referee = "";
+            int HS = 0;
+            int AS = 0;
+            int HST = 0;
+            int AST = 0;
+            int HF = 0;
+            int AF = 0; 
+            int HC = 0;
+            int AC = 0;
+            int HY = 0;
+            int AY = 0;
+            int HR = 0;
+            int AR = 0; 
             
             using (StreamReader reader = new StreamReader($"{FilePath}"))
             {
@@ -335,13 +345,117 @@ namespace SqlOperations
                         else
                             country = "Germany";
                     }
-                    else if(counter > 0)
+
+
+                    if (counter == 1)
                     {
-                        MatchDate.Add(DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture));
-                        HomeTeam.Add(values[2]);
-                        AwayTeam.Add(values[3]);
+                        div = values[0].ToString();
+                        StartDate = DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    }
+
+                    if(counter > 0)
+                    {
+                        MatchDate = (DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture));
+                        HomeTeam = (values[2]);
+                        AwayTeam = (values[3]);
                         
-                        
+                        using(var con = new SqlConnection($"{DatabaseConnectionString}"))
+                        {
+                            con.Open();
+
+
+                            //check home team
+                            var checkOnHomeTeam = $"select id from teams where teamname = ('{HomeTeam}')";
+                            using(var checkOnTeam = new SqlCommand(checkOnHomeTeam, con))
+                            {
+                                int doubleExists = (int)checkOnTeam.ExecuteScalar();
+                                if(doubleExists > 0)
+                                    homeTeamId = doubleExists;
+                            }
+                            //check away team
+                            var checkOnAwayTeam = $"select id from teams where teamname = ('{AwayTeam}')";
+                            using(var checkOnTeam = new SqlCommand(checkOnAwayTeam, con))
+                            {
+                                int doubleExists = (int)checkOnTeam.ExecuteScalar();
+                                if(doubleExists > 0)
+                                    awayTeamId = doubleExists;
+                            }
+                            var checkCountry = $"select id from countries where name = ('{country}')";
+                            using(var checkOnCountry = new SqlCommand(checkCountry, con))
+                            {
+                                int doubleExist = (int)checkOnCountry.ExecuteScalar();
+                                if(doubleExist > 0)
+                                    countryId = doubleExist;
+                            }
+
+                            leagueId = IdForLeague(div, countryId, leagueId, con);
+                            var checkSeason = $"select id from seasons where startdate = ('{StartDate}') and leagueId = ('{leagueId}')";
+                            using(var checkOnSeason = new SqlCommand(checkSeason, con))
+                            {
+                                int doubleExist = (int)checkOnSeason.ExecuteScalar();
+                                if(doubleExist > 0)
+                                {
+                                    seasonId = doubleExist;
+                                }
+                            }
+                            if(country == "England")
+                            {
+                                FTHG = Convert.ToInt32(values[4]);
+                                FTAG = Convert.ToInt32(values[5]);
+                                FTR = values[6];
+                                HTHG = Convert.ToInt32(values[7]);
+                                HTAG = Convert.ToInt32(values[8]);
+                                HTR = values[9];
+                                Referee = values[10];
+                                HS = Convert.ToInt32(values[11]);
+                                AS = Convert.ToInt32(values[12]);
+                                HST = Convert.ToInt32(values[13]);
+                                AST = Convert.ToInt32(values[14]);
+                                HF = Convert.ToInt32(values[15]);
+                                AF = Convert.ToInt32(values[16]);
+                                HC = Convert.ToInt32(values[17]);
+                                AC = Convert.ToInt32(values[18]);
+                                HY = Convert.ToInt32(values[19]);
+                                AY = Convert.ToInt32(values[20]);
+                                HR = Convert.ToInt32(values[21]);
+                                AR = Convert.ToInt32(values[22]);
+                            }
+                            if(country == "Germany")
+                            {
+                                FTHG = Convert.ToInt32(values[4]);
+                                FTAG = Convert.ToInt32(values[5]);
+                                FTR = values[6];
+                                HTHG = Convert.ToInt32(values[7]);
+                                HTAG = Convert.ToInt32(values[8]);
+                                HTR = values[9];
+                                Referee = "Null";
+                                HS = Convert.ToInt32(values[10]);
+                                AS = Convert.ToInt32(values[11]);
+                                HST = Convert.ToInt32(values[12]);
+                                AST = Convert.ToInt32(values[13]);
+                                HF = Convert.ToInt32(values[14]);
+                                AF = Convert.ToInt32(values[15]);
+                                HC = Convert.ToInt32(values[16]);
+                                AC = Convert.ToInt32(values[17]);
+                                HY = Convert.ToInt32(values[18]);
+                                AY = Convert.ToInt32(values[19]);
+                                HR = Convert.ToInt32(values[20]);
+                                AR = Convert.ToInt32(values[21]);
+                            }
+                            //var insertOperationOne = $"insert into Matches(homeTeamId,awayTeamId,seasonId,matchDate,FTHG,FTAG,FTR,HTHG,HTAG,HTR,REFEREE) values ('{homeTeamId}','{awayTeamId}','{seasonId}','{MatchDate}','{FTHG}','{FTAG}','{FTR}','{HTHG}','{HTAG}','{HTR}','{Referee}'}')";
+
+                            var insertOperation = $"insert into Matches(homeTeamId,awayTeamId,seasonId,matchDate,FTHG,FTAG,FTR,HTHG,HTAG,HTR,REFEREE,HS,[AS],HST,AST,HF,AF,HC,AC,HY,AY,HR,AR) values ('{homeTeamId}','{awayTeamId}','{seasonId}','{MatchDate}','{FTHG}','{FTAG}','{FTR}','{HTHG}','{HTAG}','{HTR}','{Referee}','{HS}','{AS}','{HST}','{AST}','{HF}','{AF}','{HC}','{AC}','{HY}','{AY}','{HR}','{AR}')";
+                            using(var InsertCommand = new SqlCommand(insertOperation,con))
+                            {
+                                InsertCommand.ExecuteNonQuery();
+                                Console.WriteLine("Record Pushed to database!");
+
+                            }
+
+                        }
+
+
+
                         //TODO:
                         //kolla upp i teams tabellen id för hometeam & awayteam => spara dessa värden
                         //hämta in leagueId (funktion)
