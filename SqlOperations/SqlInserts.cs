@@ -799,7 +799,7 @@ namespace SqlOperations
                                             homeWin = decimal.Parse(matchOdds[15], culture);
                                             draw = decimal.Parse(matchOdds[16], culture);
                                             awayWin = decimal.Parse(matchOdds[17], culture);
-                            
+
                                             williamHillId = doubleExistWilliamHill;
                                             var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,awayteamid,hometeamid,matchdate) " +
                                                 $"values (@matchId,@williamHillId,@homeWin,@draw,@awayWin,@awayTeamId,@homeTeamId,'{matchDate}')";
@@ -866,6 +866,157 @@ namespace SqlOperations
 
                 //using(var cmd = con.CreateCommand())
 
+            }
+        }
+        public void PushSpecificMatchDate()
+        {
+            DateOnly MatchDate;
+            string HomeTeam = "";
+            string AwayTeam = "";
+            int matchId = 0;
+            int homeTeamId = 0;
+            int awayTeamId = 0;
+            CultureInfo culture = CultureInfo.InvariantCulture;
+            List<string> specificList = new List<string>();
+
+            using (StreamReader reader = new StreamReader($"{FilePath}"))
+            {
+                int counter = 0;
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(';', ',');
+                    if (counter > 0)
+                    {
+                        if (IsEnglish)
+                        {
+                            //column 44 -64
+                            for (int i = 44; i <= 64; i++)
+                            {
+                                specificList.Add(values[i].ToString());
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 43; i <= 63; i++)
+                            {
+                                specificList.Add(values[i].ToString());
+                            }
+                            //column 43-63
+                        }
+
+                        MatchDate = (DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture));
+                        HomeTeam = (values[2]);
+                        AwayTeam = (values[3]);
+
+                        using (var con = new SqlConnection($"{DatabaseConnectionString}"))
+                        {
+                            con.Open();
+                            var homeTeamCheck = $"select id from teams where teamname = ('{HomeTeam}')";
+                            using (var first = new SqlCommand(homeTeamCheck, con))
+                            {
+                                int doubleValues = (int)first.ExecuteScalar();
+                                if (doubleValues > 0)
+                                    homeTeamId = doubleValues;
+
+                            }
+                            var awayTeamCheck = $"select id from teams where teamname = ('{AwayTeam}')";
+                            using (var first = new SqlCommand(awayTeamCheck, con))
+                            {
+                                int doubleValues = (int)first.ExecuteScalar();
+                                if (doubleValues > 0)
+                                    awayTeamId = doubleValues;
+                            }
+
+                            var matchDateIdCheck = $"select id from matches where homeTeamId = ('{homeTeamId}') and awayTeamId = ('{awayTeamId}') and matchDate = ('{MatchDate}')";
+                            using (var first = new SqlCommand(matchDateIdCheck, con))
+                            {
+                                int doubleValues = (int)first.ExecuteScalar();
+                                if (doubleValues > 0)
+                                    matchId = doubleValues;
+                            }
+
+                            //kolla upp dubletter
+
+                            var doubleRecord = $"select count(*) from specificbettingodds where homeTeamId = ('{homeTeamId}') and awayTeamId = ('{awayTeamId}') and mathDate = ('{MatchDate}') and id = ('{matchId}')";
+                            using (var first = new SqlCommand(doubleRecord, con))
+                            {
+                                int doubleValues = (int)first.ExecuteScalar();
+                                if (doubleValues > 0)
+                                {
+                                    Console.WriteLine("Duplicates found!");
+                                }
+                                else if (doubleValues == 0)
+                                {
+
+
+                                    double bB1X2 = double.Parse(specificList[0], culture);
+                                    double BbMxH = double.Parse(specificList[1], culture);
+                                    double BbAvH = double.Parse(specificList[2], culture);
+                                    double BbMxD = double.Parse(specificList[3], culture);
+                                    double BbAvD = double.Parse(specificList[4], culture);
+                                    double BbMxA = double.Parse(specificList[5], culture);
+                                    double BbAvA = double.Parse(specificList[6], culture);
+                                    double BbOU = double.Parse(specificList[7], culture);
+                                    double BbMxGT25 = double.Parse(specificList[8], culture);
+                                    double BbAvGT25 = double.Parse(specificList[9], culture);
+                                    double BbMxLT25 = double.Parse(specificList[10], culture);
+                                    double BbAvLT25 = double.Parse(specificList[11], culture);
+                                    double BbAH = double.Parse(specificList[12], culture);
+                                    double BbAHH = double.Parse(specificList[13], culture);
+                                    double BbMxAHH = double.Parse(specificList[14], culture);
+                                    double BbAvAHH = double.Parse(specificList[15], culture);
+                                    double BbMxAHA = double.Parse(specificList[16], culture);
+                                    double BbAvAHA = double.Parse(specificList[17], culture);
+                                    double PSCH = double.Parse(specificList[18], culture);
+                                    double PSCD = double.Parse(specificList[19], culture);
+                                    double PSCA = double.Parse(specificList[20], culture);
+
+
+
+
+                                    var input = $"insert into specificbettingodds(matchId,bB1X2,BbMxH,BbAvH,BbMxD,BbAvD,BbMxA,BbAvA,BbOU,BbMxGT25,BbAvGT25,BbMxLT25,BbAvLT25,BbAH,BbAHH,BbMxAHH,BbAvAHH,BbMxAHA,BbAvAHA,PSCH,PSCD,PSCA,awayTeamId,homeTeamId,mathDate)" +
+                                        $"values (@matchId,@bB1x2,@BbMxH,@BbAvH,@BbMxD,@BbAvD,@BbMxA,@BbAvA,@BbOU,@BbMxGT25,@BbAvGT25,@BbMxLT25,@BbAvLT25,@BbAH,@BbAHH,@BbMxAHH,@BbAvAHH,@BbMxAHA,@BbAvAHA,@PSCH,@PSCD,@PSCA,@awayTeamId,@homeTeamId,'{MatchDate}')";
+
+                                    using (var inputResult = new SqlCommand(input, con))
+                                    {
+                                        inputResult.Parameters.AddWithValue("@matchId", matchId);
+                                        inputResult.Parameters.AddWithValue("@bB1x2", Convert.ToDouble(bB1X2));
+                                        inputResult.Parameters.AddWithValue("@BbMxH", Convert.ToDouble(BbMxH));
+                                        inputResult.Parameters.AddWithValue("@BbAvH", Convert.ToDouble(BbAvH));
+                                        inputResult.Parameters.AddWithValue("@BbMxD", Convert.ToDouble(BbMxD));
+                                        inputResult.Parameters.AddWithValue("@BbAvD", Convert.ToDouble(BbAvD));
+                                        inputResult.Parameters.AddWithValue("@BbMxA", Convert.ToDouble(BbMxA));
+                                        inputResult.Parameters.AddWithValue("@BbAvA", Convert.ToDouble(BbAvA));
+                                        inputResult.Parameters.AddWithValue("@BbOU", Convert.ToDouble(BbOU));
+                                        
+                                        inputResult.Parameters.AddWithValue("@BbMxGT25", Convert.ToDouble(BbMxGT25));
+                                        inputResult.Parameters.AddWithValue("@BbAvGT25", Convert.ToDouble(BbAvGT25));
+                                        inputResult.Parameters.AddWithValue("@BbMxLT25", Convert.ToDouble(BbMxLT25));
+                                        inputResult.Parameters.AddWithValue("@BbAvLT25", Convert.ToDouble(BbAvLT25));
+                                        inputResult.Parameters.AddWithValue("@BbAH", Convert.ToDouble(BbAH));
+                                        inputResult.Parameters.AddWithValue("@BbAHH", Convert.ToDouble(BbAHH));
+                                        inputResult.Parameters.AddWithValue("@BbMxAHH", Convert.ToDouble(BbMxAHH));
+                                        inputResult.Parameters.AddWithValue("@BbAvAHH", Convert.ToDouble(BbAvAHH));
+                                        inputResult.Parameters.AddWithValue("@BbMxAHA", Convert.ToDouble(BbMxAHA));
+                                        inputResult.Parameters.AddWithValue("@BbAvAHA", Convert.ToDouble(BbAvAHA));
+                                        inputResult.Parameters.AddWithValue("@PSCH", Convert.ToDouble(PSCH));
+                                        inputResult.Parameters.AddWithValue("@PSCD", Convert.ToDouble(PSCD));
+                                        inputResult.Parameters.AddWithValue("@PSCA", Convert.ToDouble(PSCA));
+                                        inputResult.Parameters.AddWithValue("@awayTeamId", Convert.ToDouble(awayTeamId));
+                                        inputResult.Parameters.AddWithValue("@homeTeamId", Convert.ToDouble(homeTeamId));
+
+                                        inputResult.ExecuteNonQuery();
+                                        Console.WriteLine("Record Pushed to database!");
+                                        specificList.Clear();
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                    counter++;
+                }
             }
         }
     }

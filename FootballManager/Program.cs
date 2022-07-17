@@ -12,5 +12,6 @@ SqlInserts inserts = new SqlInserts(@"C:\Users\patri\Desktop\LIA - Uppgift\Premi
 //inserts.PushDataToSeasons();
 //inserts.PushDataToMatches();
 //inserts.PushDataToBettingCompanies();
-inserts.PushMatchOdds();
+//inserts.PushMatchOdds();
+inserts.PushSpecificMatchDate();
 
