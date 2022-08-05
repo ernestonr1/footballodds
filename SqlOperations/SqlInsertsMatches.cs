@@ -13,10 +13,10 @@ namespace SqlOperations
 
         public void PushDataForMatchesToDatabase()
         {
-            PushDataToMatches();
-            PushDataToBettingCompanies();
+            //PushDataToMatches();
+            //PushDataToBettingCompanies();
 
-            PushMatchOdds();
+            //PushMatchOdds();
             PushSpecificMatchData();
         }
 
@@ -891,6 +891,78 @@ namespace SqlOperations
             int homeTeamId = 0;
             int awayTeamId = 0;
             int startIndex = 0;
+
+            decimal Bb1X2 = 0;
+            decimal BbMxH = 0;
+            decimal BbAvH = 0;
+            decimal BbMxD = 0;
+            decimal BbAvD = 0;
+            decimal BbMxA = 0;
+            decimal BbAvA = 0;
+            decimal BbOU = 0;
+            decimal BbMxGT25 = 0;
+            decimal BbAvGT25 = 0;
+            decimal BbMxLT25 = 0;
+            decimal BbAvLT25 = 0;
+            decimal BbAH = 0;
+            decimal BbAHH = 0;
+            decimal BbMxAHH = 0;
+            decimal BbAvAHH = 0;
+            decimal BbMxAHA = 0;
+            decimal BbAvAHA = 0;
+            decimal PSCH = 0;
+            decimal PSCD = 0;
+            decimal PSCA = 0;
+            decimal MaxH = 0;
+            decimal MaxD = 0;
+            decimal MaxA = 0;
+            decimal AvgH = 0;
+            decimal AvgD = 0;
+            decimal AvgA = 0;
+            decimal B365GT2Point5 = 0;
+            decimal B365LT2Point5 = 0;
+            decimal PGT2Point5 = 0;
+            decimal PLT2Point5 = 0;
+            decimal MaxGT2Point5 = 0;
+            decimal MaxLT2Point5 = 0;
+            decimal AvgGT2Point5 = 0;
+            decimal AvgLT2Point5 = 0;
+            decimal AHh = 0;
+            decimal B365AHH = 0;
+            decimal B365AHA = 0;
+            decimal PAHH = 0;
+            decimal PAHA = 0;
+            decimal MaxAHH = 0;
+            decimal MaxAHA = 0;
+            decimal AvgAHH = 0;
+            decimal AvhAHA = 0;
+            decimal MaxCH = 0;
+            decimal MaxCD = 0;
+            decimal MaxCA = 0;
+            decimal AvgCH = 0;
+            decimal AvgCD = 0;
+            decimal AvgCA = 0;
+            decimal Bet365CGT2Point5 = 0;
+            decimal Bet365CLT2Point5 = 0;
+            decimal PCGT2Point5 = 0;
+            decimal PCLT2Point5 = 0;
+            decimal MaxCGT2Point5 = 0;
+            decimal MaxCLT2Point5 = 0;
+            decimal AvgCGT2Point5 = 0;
+            decimal AvgCLT2Point5 = 0;
+            decimal AHCH = 0;
+            decimal B365CAHH = 0;
+            decimal B365CAHA = 0;
+            decimal PCAHH = 0;
+            decimal PCAHA = 0;
+            decimal MaxCAHH = 0;
+            decimal MaxCAHA = 0;
+            decimal AvgCAHH = 0;
+            decimal AvgCAHA = 0;
+
+
+
+
             CultureInfo culture = CultureInfo.InvariantCulture;
             List<string> specificList = new List<string>();
 
@@ -975,27 +1047,27 @@ namespace SqlOperations
                                 }
                                 else if (doubleValues == 0)
                                 {
-                                    double bB1X2 = double.Parse(specificList[0], culture);
-                                    double BbMxH = double.Parse(specificList[1], culture);
-                                    double BbAvH = double.Parse(specificList[2], culture);
-                                    double BbMxD = double.Parse(specificList[3], culture);
-                                    double BbAvD = double.Parse(specificList[4], culture);
-                                    double BbMxA = double.Parse(specificList[5], culture);
-                                    double BbAvA = double.Parse(specificList[6], culture);
-                                    double BbOU = double.Parse(specificList[7], culture);
-                                    double BbMxGT25 = double.Parse(specificList[8], culture);
-                                    double BbAvGT25 = double.Parse(specificList[9], culture);
-                                    double BbMxLT25 = double.Parse(specificList[10], culture);
-                                    double BbAvLT25 = double.Parse(specificList[11], culture);
-                                    double BbAH = double.Parse(specificList[12], culture);
-                                    double BbAHH = double.Parse(specificList[13], culture);
-                                    double BbMxAHH = double.Parse(specificList[14], culture);
-                                    double BbAvAHH = double.Parse(specificList[15], culture);
-                                    double BbMxAHA = double.Parse(specificList[16], culture);
-                                    double BbAvAHA = double.Parse(specificList[17], culture);
-                                    double PSCH = double.Parse(specificList[18], culture);
-                                    double PSCD = double.Parse(specificList[19], culture);
-                                    double PSCA = double.Parse(specificList[20], culture);
+                                     Bb1X2 = decimal.Parse(specificList[0], culture);
+                                     BbMxH = decimal.Parse(specificList[1], culture);
+                                     BbAvH = decimal.Parse(specificList[2], culture);
+                                     BbMxD = decimal.Parse(specificList[3], culture);
+                                     BbAvD = decimal.Parse(specificList[4], culture);
+                                     BbMxA = decimal.Parse(specificList[5], culture);
+                                     BbAvA = decimal.Parse(specificList[6], culture);
+                                     BbOU = decimal.Parse(specificList[7], culture);
+                                     BbMxGT25 = decimal.Parse(specificList[8], culture);
+                                     BbAvGT25 = decimal.Parse(specificList[9], culture);
+                                     BbMxLT25 = decimal.Parse(specificList[10], culture);
+                                     BbAvLT25 = decimal.Parse(specificList[11], culture);
+                                     BbAH = decimal.Parse(specificList[12], culture);
+                                     BbAHH = decimal.Parse(specificList[13], culture);
+                                     BbMxAHH = decimal.Parse(specificList[14], culture);
+                                     BbAvAHH = decimal.Parse(specificList[15], culture);
+                                     BbMxAHA = decimal.Parse(specificList[16], culture);
+                                     BbAvAHA = decimal.Parse(specificList[17], culture);
+                                     PSCH = decimal.Parse(specificList[18], culture);
+                                     PSCD = decimal.Parse(specificList[19], culture);
+                                     PSCA = decimal.Parse(specificList[20], culture);
 
                                     var input = $"insert into specificbettingodds(matchId,bB1X2,BbMxH,BbAvH,BbMxD,BbAvD,BbMxA,BbAvA,BbOU,BbMxGT25,BbAvGT25,BbMxLT25,BbAvLT25,BbAH,BbAHH,BbMxAHH,BbAvAHH,BbMxAHA,BbAvAHA,PSCH,PSCD,PSCA)" +
                                         $"values (@matchId,@bB1x2,@BbMxH,@BbAvH,@BbMxD,@BbAvD,@BbMxA,@BbAvA,@BbOU,@BbMxGT25,@BbAvGT25,@BbMxLT25,@BbAvLT25,@BbAH,@BbAHH,@BbMxAHH,@BbAvAHH,@BbMxAHA,@BbAvAHA,@PSCH,@PSCD,@PSCA)";
