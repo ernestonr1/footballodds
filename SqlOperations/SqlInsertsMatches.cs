@@ -111,6 +111,68 @@ namespace SqlOperations
             int VCIndex = 0;
             int williamHillIndex = 0;
 
+
+
+
+            int closingHomeBet365 = 0;
+            int closingDrawBet365 = 0;
+            int closingAwayBet365 = 0;
+
+
+            int closingDrawBlueSquare = 0;
+            int closingAwayBlueSquare = 0;
+            int closingHomeBlueSquare = 0;
+
+
+            int closingHomeBetAndWin = 0;
+            int closingDrawBetAndWin = 0;
+            int closingAwayBetAndWin = 0;
+
+
+            int closingHomeGameBookers = 0;
+            int closingDrawGameBookers = 0;
+            int closingAwayGameBookers = 0;
+
+            int closingHomeInterWetten = 0;
+            int closingDrawInterWetten = 0;
+            int closingAwayInterWetten = 0;
+
+            int closingHomeLadbrookers = 0;
+            int closingDrawLadbrookers = 0;
+            int closingAwayLadbrookers = 0;
+
+            int closingHomePinnacle = 0;
+            int closingDrawPinnacle = 0;
+            int closingAwayPinnacle = 0;
+
+
+            int closingHomeSportingOdds = 0;
+            int closingDrawSportingOdds = 0;
+            int closingAwaySportingOdds = 0;
+
+            int closingHomeSportingBet = 0;
+            int closingDrawSportingBet = 0;
+            int closingAwaySportingBet = 0;
+
+            int closingHomeStanJames = 0;
+            int closingDrawStanJames = 0;
+            int closingAwayStanJames = 0;
+
+
+            int closingHomeStanleybey = 0;
+            int closingDrawStanleybey = 0;
+            int closingAwayStanleybey = 0;
+
+
+            int closingHomeVCBet = 0;
+            int closingDrawVCBet = 0;
+            int closingAwayVCBet = 0;
+
+
+            int closingHomeWilliamHill = 0;
+            int closingDrawWilliamHill = 0;
+            int closingAwayWilliamHill = 0;
+
             decimal homeWin = 0M;
             decimal draw = 0M;
             decimal awayWin = 0M;
@@ -127,14 +189,61 @@ namespace SqlOperations
                         var line = reader.ReadLine();
                         var values = line.Split(';', ',');
 
-
-
                         if (counter == 0)
                         {
-                            //TODO: kolla upp om varje column med bettingcompanies finns
-                            int closingHomeBet365 = Array.IndexOf(values, "B365CH");
-                            int closingDrawBet365 = Array.IndexOf(values, "B365CD");
-                            int closingAwayBet365 = Array.IndexOf(values, "B365CA");
+                            closingHomeBet365 = Array.IndexOf(values, "B365CH");
+                            closingDrawBet365 = Array.IndexOf(values, "B365CD");
+                            closingAwayBet365 = Array.IndexOf(values, "B365CA");
+
+                            closingHomeBlueSquare = Array.IndexOf(values, "BSCH");
+                            closingDrawBlueSquare = Array.IndexOf(values, "BSCD");
+                            closingAwayBlueSquare = Array.IndexOf(values, "BSCA");
+
+                            closingHomeBetAndWin = Array.IndexOf(values, "BWCH");
+                            closingDrawBetAndWin = Array.IndexOf(values, "BWCD");
+                            closingAwayBetAndWin = Array.IndexOf(values, "BWCA");
+
+                            closingHomeGameBookers = Array.IndexOf(values, "GBCH");
+                            closingDrawGameBookers = Array.IndexOf(values, "GBCD");
+                            closingAwayGameBookers = Array.IndexOf(values, "GBCA");
+
+                            closingHomeInterWetten = Array.IndexOf(values, "IWCH");
+                            closingDrawInterWetten = Array.IndexOf(values, "IWCD");
+                            closingAwayInterWetten = Array.IndexOf(values, "IWCA");
+
+                            closingHomeLadbrookers = Array.IndexOf(values, "LBCH");
+                            closingDrawLadbrookers = Array.IndexOf(values, "LBCD");
+                            closingAwayLadbrookers = Array.IndexOf(values, "LBCA");
+
+                            closingHomePinnacle = Array.IndexOf(values, "PSCH");
+                            closingDrawPinnacle = Array.IndexOf(values, "PSCD");
+                            closingAwayPinnacle = Array.IndexOf(values, "PSCA");
+
+                            closingHomeSportingOdds = Array.IndexOf(values, "SOCH");
+                            closingDrawSportingOdds = Array.IndexOf(values, "SOCD");
+                            closingAwaySportingOdds = Array.IndexOf(values, "SOCA");
+
+                            closingHomeSportingBet = Array.IndexOf(values, "SBCH");
+                            closingDrawSportingBet = Array.IndexOf(values, "SBCD");
+                            closingAwaySportingBet = Array.IndexOf(values, "SBCA");
+
+                            closingHomeStanJames = Array.IndexOf(values, "SJCH");
+                            closingDrawStanJames = Array.IndexOf(values, "SJCD");
+                            closingAwayStanJames = Array.IndexOf(values, "SJCA");
+
+                            closingHomeStanleybey = Array.IndexOf(values, "SYCH");
+                            closingDrawStanleybey = Array.IndexOf(values, "SYCD");
+                            closingAwayStanleybey = Array.IndexOf(values, "SYCA");
+
+                            closingHomeVCBet = Array.IndexOf(values, "VCCH");
+                            closingDrawVCBet = Array.IndexOf(values, "VCCD");
+                            closingAwayVCBet = Array.IndexOf(values, "VCCA");
+
+                            closingHomeWilliamHill = Array.IndexOf(values, "WHCH");
+                            closingDrawWilliamHill = Array.IndexOf(values, "WHCD");
+                            closingAwayWilliamHill = Array.IndexOf(values, "WHCA");
+
+
 
 
                             if (values.Contains("Referee"))
@@ -214,11 +323,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            
-
-
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, bet365Id, bet365Index, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, bet365Id, bet365Index, homeWin, draw, awayWin, con, values, input, closingHomeBet365, closingDrawBet365, closingAwayBet365);
                                         }
                                     }
                                 }
@@ -257,8 +363,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, blueSquareId, blueSquareIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, blueSquareId, blueSquareIndex, homeWin, draw, awayWin, con, values, input, closingHomeBlueSquare, closingDrawBlueSquare, closingAwayBlueSquare);
                                         }
                                     }
                                 }
@@ -298,9 +404,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, betAndWinId, betAndWinIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, betAndWinId, betAndWinIndex, homeWin, draw, awayWin, con, values, input, closingHomeBetAndWin, closingDrawBetAndWin, closingAwayBetAndWin);
                                         }
                                     }
                                 }
@@ -341,9 +446,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, gameBookersId, gameBookersIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, gameBookersId, gameBookersIndex, homeWin, draw, awayWin, con, values, input, closingHomeGameBookers, closingDrawGameBookers, closingAwayGameBookers);
                                         }
                                     }
                                 }
@@ -383,9 +487,9 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, interwettenId, interwettenIndex, homeWin, draw, awayWin, con, values, input);
+
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, interwettenId, interwettenIndex, homeWin, draw, awayWin, con, values, input, closingHomeInterWetten, closingDrawInterWetten, closingAwayInterWetten);
                                         }
                                     }
                                 }
@@ -423,9 +527,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, ladbrokersId, ladbrokersIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, ladbrokersId, ladbrokersIndex, homeWin, draw, awayWin, con, values, input, closingHomeLadbrookers, closingDrawLadbrookers, closingAwayLadbrookers);
                                         }
                                     }
                                 }
@@ -463,9 +566,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, pinnacleId, pinnacleIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, pinnacleId, pinnacleIndex, homeWin, draw, awayWin, con, values, input, closingHomePinnacle, closingDrawPinnacle, closingAwayPinnacle);
                                         }
                                     }
                                 }
@@ -505,10 +607,9 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
 
-                                            InsertIntoMatchOdds(matchId, sportingOddsId, sportingOddsIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, sportingOddsId, sportingOddsIndex, homeWin, draw, awayWin, con, values, input, closingHomeSportingOdds, closingDrawSportingOdds, closingAwaySportingOdds);
                                         }
                                     }
                                 }
@@ -547,9 +648,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, sportingBetId, sportingBetIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, sportingBetId, sportingBetIndex, homeWin, draw, awayWin, con, values, input, closingHomeSportingBet, closingDrawSportingBet, closingAwaySportingBet);
                                         }
                                     }
                                 }
@@ -588,9 +688,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, stanJamesId, stanJamesIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, stanJamesId, stanJamesIndex, homeWin, draw, awayWin, con, values, input, closingHomeStanJames, closingDrawStanJames, closingAwayStanJames);
                                         }
                                     }
                                 }
@@ -629,9 +728,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, stanleyBetId, stanleyBetIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, stanleyBetId, stanleyBetIndex, homeWin, draw, awayWin, con, values, input, closingHomeStanleybey, closingDrawStanleybey, closingAwayStanleybey);
                                         }
                                     }
                                 }
@@ -669,10 +767,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                                $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-
-                                            InsertIntoMatchOdds(matchId, williamHillId, williamHillIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, williamHillId, williamHillIndex, homeWin, draw, awayWin, con, values, input, closingHomeWilliamHill, closingDrawWilliamHill, closingAwayWilliamHill);
                                         }
                                     }
                                 }
@@ -710,9 +806,8 @@ namespace SqlOperations
                                         }
                                         else if (checkMatchId == 0)
                                         {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds) " +
-                                            $"values (@matchId,@betId,@homeWin,@draw,@awayWin)";
-                                            InsertIntoMatchOdds(matchId, VCBetId, VCIndex, homeWin, draw, awayWin, con, values, input);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
+                                            InsertIntoMatchOdds(matchId, VCBetId, VCIndex, homeWin, draw, awayWin, con, values, input, closingHomeVCBet, closingDrawVCBet, closingAwayVCBet);
                                         }
                                     }
                                 }
@@ -726,7 +821,7 @@ namespace SqlOperations
             }
         }
 
-        private static void InsertIntoMatchOdds(int matchId, int betId, int betIndex, decimal homeWin, decimal draw, decimal awayWin, SqlConnection con, string[] values, string input)
+        private static void InsertIntoMatchOdds(int matchId, int betId, int betIndex, decimal homeWin, decimal draw, decimal awayWin, SqlConnection con, string[] values, string input, int closingHomeIndex, int closingDrawIndex, int closingAwayIndex)
         {
             using (var inputResult = new SqlCommand(input, con))
             {
@@ -737,6 +832,21 @@ namespace SqlOperations
                     inputResult.Parameters.AddWithValue("@homeWin", DBNull.Value);
                     inputResult.Parameters.AddWithValue("@draw", DBNull.Value);
                     inputResult.Parameters.AddWithValue("@awayWin", DBNull.Value);
+                    if (closingHomeIndex == -1)
+                        inputResult.Parameters.AddWithValue("@closingHome", DBNull.Value);
+                    else
+                        inputResult.Parameters.AddWithValue("@closingHome", values[closingHomeIndex]);
+
+                    if (closingDrawIndex == -1)
+                        inputResult.Parameters.AddWithValue("@closingDraw", DBNull.Value);
+                    else
+                        inputResult.Parameters.AddWithValue("@closingDraw", values[closingDrawIndex]);
+
+                    if (closingAwayIndex == -1)
+                        inputResult.Parameters.AddWithValue("@closingAway", DBNull.Value);
+                    else
+                        inputResult.Parameters.AddWithValue("@closingAway", values[closingAwayIndex]);
+
                     inputResult.ExecuteNonQuery();
                     Console.WriteLine("Null value Pushed to database!");
                 }
@@ -747,6 +857,23 @@ namespace SqlOperations
                     inputResult.Parameters.AddWithValue("@homeWin", Convert.ToDecimal(homeWin));
                     inputResult.Parameters.AddWithValue("@draw", Convert.ToDecimal(draw));
                     inputResult.Parameters.AddWithValue("@awayWin", Convert.ToDecimal(awayWin));
+
+                    if (closingHomeIndex == -1)
+                        inputResult.Parameters.AddWithValue("@closingHome", DBNull.Value);
+                    else
+                        inputResult.Parameters.AddWithValue("@closingHome", values[closingHomeIndex]);
+
+                    if (closingDrawIndex == -1)
+                        inputResult.Parameters.AddWithValue("@closingDraw", DBNull.Value);
+                    else
+                        inputResult.Parameters.AddWithValue("@closingDraw", values[closingDrawIndex]);
+
+                    if (closingAwayIndex == -1)
+                        inputResult.Parameters.AddWithValue("@closingAway", DBNull.Value);
+                    else
+                        inputResult.Parameters.AddWithValue("@closingAway", values[closingAwayIndex]);
+
+
                     inputResult.ExecuteNonQuery();
                     Console.WriteLine("Record Pushed to database!");
                 }
@@ -755,6 +882,8 @@ namespace SqlOperations
 
         private void PushSpecificMatchData()
         {
+
+            //TODO: kolla upp vilket index alla kolumner har:
             DateOnly MatchDate;
             string HomeTeam = "";
             string AwayTeam = "";
