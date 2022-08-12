@@ -30,7 +30,7 @@ namespace SqlOperations
 
 
 
-       private void PushToCountries()
+        private void PushToCountries()
         {
             string countryName = "";
             using (SqlConnection con = new SqlConnection($"{DatabaseConnectionString}"))
@@ -68,10 +68,12 @@ namespace SqlOperations
                 }
             }
         }
-       private void PushTeamsToDatabase()
+        private void PushTeamsToDatabase()
         {
             List<string> firstRow = new List<string>();
             List<string> result = new List<string>();
+            int awayTeamId = 0;
+            int homeTeamId = 0;
 
             using (SqlConnection con = new SqlConnection($"{DatabaseConnectionString}"))
             {
@@ -79,6 +81,7 @@ namespace SqlOperations
 
                 using (StreamReader reader = new StreamReader($"{FilePath}"))
                 {
+
                     int counter = 0;
                     while (!reader.EndOfStream)
                     {
@@ -86,6 +89,10 @@ namespace SqlOperations
                         var values = line.Split(';', ',');
                         if (counter == 0)
                         {
+
+                            awayTeamId = Array.IndexOf(values, "AwayTeam");
+                            homeTeamId = Array.IndexOf(values, "HomeTeam");
+
                             if (values.Contains("Referee"))
                                 IsEnglish = true;
                             else
@@ -93,8 +100,8 @@ namespace SqlOperations
                         }
                         if (counter > 0)
                         {
-                            firstRow.Add(values[2].ToString());
-                            firstRow.Add(values[3].ToString());
+                            firstRow.Add(values[homeTeamId].ToString());
+                            firstRow.Add(values[awayTeamId].ToString());
                         }
                         counter++;
                     }
@@ -153,7 +160,7 @@ namespace SqlOperations
                 con.Close();
             }
         }
-       private void PushToLeagues()
+        private void PushToLeagues()
         {
             List<string> leagues = new List<string>();
             string country = "";
@@ -196,7 +203,7 @@ namespace SqlOperations
                 }
             }
         }
-       private void PushDataToSeasons()
+        private void PushDataToSeasons()
         {
             string div = "";
             string start = "";
@@ -234,11 +241,12 @@ namespace SqlOperations
 
 
 
-                    if (reader.EndOfStream)
+                    if (counter > 1)
                     {
-                        if (values[1].Length <= 8)
+
+                        if (values[1].Length <= 8 && values[1] != "")
                             endDate = ConvertDate(values);
-                        else
+                        else if (values[1].Length > 8 && values[1] != "")
                         {
                             endDate = DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture);
                         }
@@ -286,7 +294,7 @@ namespace SqlOperations
 
             return IsEnglish;
         }
-        protected  void LookUpAndInsertData(SqlConnection con, string query, string insert)
+        protected void LookUpAndInsertData(SqlConnection con, string query, string insert)
         {
             using (var selectCommand = new SqlCommand(query, con))
             {
@@ -305,7 +313,7 @@ namespace SqlOperations
                 }
             }
         }
-        protected  int IdForLeague(string div, int countryId, int leagueId, SqlConnection con)
+        protected int IdForLeague(string div, int countryId, int leagueId, SqlConnection con)
         {
             var checkForLeagueId = $"select id from leagues where div = ('{div}') and countryId = ('{countryId}')";
             using (var command = new SqlCommand(checkForLeagueId, con))
@@ -318,7 +326,7 @@ namespace SqlOperations
             }
             return leagueId;
         }
-        protected  DateOnly ConvertDate(string[] values)
+        protected DateOnly ConvertDate(string[] values)
         {
             DateOnly matchDate;
             string newDate = values[1];

@@ -13,11 +13,16 @@ namespace SqlOperations
 
         public void PushDataForMatchesToDatabase()
         {
-            //PushDataToMatches();
-            //PushDataToBettingCompanies();
+            string message = PushDataToMatches();
+            PushDataToBettingCompanies();
+            string message2 = PushMatchOdds();
 
-            //PushMatchOdds();
-            PushSpecificMatchData();
+
+
+
+            Console.WriteLine(message);
+            //Console.WriteLine(message2);
+
         }
 
 
@@ -71,13 +76,20 @@ namespace SqlOperations
             }
         }
 
-        void PushMatchOdds()
+        private string PushMatchOdds()
         {
+
+            int duplicatesFound = 0;
+            int pushedNullValue = 0;
+            int pushedToDb = 0;
+
             CultureInfo culture = CultureInfo.InvariantCulture;
             string homeTeam = "";
             string awayTeam = "";
             int homeTeamId = 0;
             int awayTeamId = 0;
+            int homeTeamIndex = 0;
+            int awayTeamIndex = 0;
             int matchId = 0;
             DateOnly matchDate;
             string? nullValue = "";
@@ -114,68 +126,15 @@ namespace SqlOperations
 
 
 
-            int closingHomeBet365 = 0;
-            int closingDrawBet365 = 0;
-            int closingAwayBet365 = 0;
 
 
-            int closingDrawBlueSquare = 0;
-            int closingAwayBlueSquare = 0;
-            int closingHomeBlueSquare = 0;
+            decimal interhomeWin = 0M;
+            decimal interdraw = 0M;
+            decimal interawayWin = 0M;
 
-
-            int closingHomeBetAndWin = 0;
-            int closingDrawBetAndWin = 0;
-            int closingAwayBetAndWin = 0;
-
-
-            int closingHomeGameBookers = 0;
-            int closingDrawGameBookers = 0;
-            int closingAwayGameBookers = 0;
-
-            int closingHomeInterWetten = 0;
-            int closingDrawInterWetten = 0;
-            int closingAwayInterWetten = 0;
-
-            int closingHomeLadbrookers = 0;
-            int closingDrawLadbrookers = 0;
-            int closingAwayLadbrookers = 0;
-
-            int closingHomePinnacle = 0;
-            int closingDrawPinnacle = 0;
-            int closingAwayPinnacle = 0;
-
-
-            int closingHomeSportingOdds = 0;
-            int closingDrawSportingOdds = 0;
-            int closingAwaySportingOdds = 0;
-
-            int closingHomeSportingBet = 0;
-            int closingDrawSportingBet = 0;
-            int closingAwaySportingBet = 0;
-
-            int closingHomeStanJames = 0;
-            int closingDrawStanJames = 0;
-            int closingAwayStanJames = 0;
-
-
-            int closingHomeStanleybey = 0;
-            int closingDrawStanleybey = 0;
-            int closingAwayStanleybey = 0;
-
-
-            int closingHomeVCBet = 0;
-            int closingDrawVCBet = 0;
-            int closingAwayVCBet = 0;
-
-
-            int closingHomeWilliamHill = 0;
-            int closingDrawWilliamHill = 0;
-            int closingAwayWilliamHill = 0;
-
-            decimal homeWin = 0M;
-            decimal draw = 0M;
-            decimal awayWin = 0M;
+            decimal whhomeWin = 0M;
+            decimal whdraw = 0M;
+            decimal whawayWin = 0M;
 
             List<string> matchOdds = new List<string>();
             using (var con = new SqlConnection($"{DatabaseConnectionString}"))
@@ -191,57 +150,9 @@ namespace SqlOperations
 
                         if (counter == 0)
                         {
-                            closingHomeBet365 = Array.IndexOf(values, "B365CH");
-                            closingDrawBet365 = Array.IndexOf(values, "B365CD");
-                            closingAwayBet365 = Array.IndexOf(values, "B365CA");
 
-                            closingHomeBlueSquare = Array.IndexOf(values, "BSCH");
-                            closingDrawBlueSquare = Array.IndexOf(values, "BSCD");
-                            closingAwayBlueSquare = Array.IndexOf(values, "BSCA");
-
-                            closingHomeBetAndWin = Array.IndexOf(values, "BWCH");
-                            closingDrawBetAndWin = Array.IndexOf(values, "BWCD");
-                            closingAwayBetAndWin = Array.IndexOf(values, "BWCA");
-
-                            closingHomeGameBookers = Array.IndexOf(values, "GBCH");
-                            closingDrawGameBookers = Array.IndexOf(values, "GBCD");
-                            closingAwayGameBookers = Array.IndexOf(values, "GBCA");
-
-                            closingHomeInterWetten = Array.IndexOf(values, "IWCH");
-                            closingDrawInterWetten = Array.IndexOf(values, "IWCD");
-                            closingAwayInterWetten = Array.IndexOf(values, "IWCA");
-
-                            closingHomeLadbrookers = Array.IndexOf(values, "LBCH");
-                            closingDrawLadbrookers = Array.IndexOf(values, "LBCD");
-                            closingAwayLadbrookers = Array.IndexOf(values, "LBCA");
-
-                            closingHomePinnacle = Array.IndexOf(values, "PSCH");
-                            closingDrawPinnacle = Array.IndexOf(values, "PSCD");
-                            closingAwayPinnacle = Array.IndexOf(values, "PSCA");
-
-                            closingHomeSportingOdds = Array.IndexOf(values, "SOCH");
-                            closingDrawSportingOdds = Array.IndexOf(values, "SOCD");
-                            closingAwaySportingOdds = Array.IndexOf(values, "SOCA");
-
-                            closingHomeSportingBet = Array.IndexOf(values, "SBCH");
-                            closingDrawSportingBet = Array.IndexOf(values, "SBCD");
-                            closingAwaySportingBet = Array.IndexOf(values, "SBCA");
-
-                            closingHomeStanJames = Array.IndexOf(values, "SJCH");
-                            closingDrawStanJames = Array.IndexOf(values, "SJCD");
-                            closingAwayStanJames = Array.IndexOf(values, "SJCA");
-
-                            closingHomeStanleybey = Array.IndexOf(values, "SYCH");
-                            closingDrawStanleybey = Array.IndexOf(values, "SYCD");
-                            closingAwayStanleybey = Array.IndexOf(values, "SYCA");
-
-                            closingHomeVCBet = Array.IndexOf(values, "VCCH");
-                            closingDrawVCBet = Array.IndexOf(values, "VCCD");
-                            closingAwayVCBet = Array.IndexOf(values, "VCCA");
-
-                            closingHomeWilliamHill = Array.IndexOf(values, "WHCH");
-                            closingDrawWilliamHill = Array.IndexOf(values, "WHCD");
-                            closingAwayWilliamHill = Array.IndexOf(values, "WHCA");
+                            homeTeamIndex = Array.IndexOf(values, "HomeTeam");
+                            awayTeamIndex = Array.IndexOf(values, "AwayTeam");
 
 
 
@@ -259,7 +170,7 @@ namespace SqlOperations
                                 out stanJamesIndex, out stanleyBetIndex, out williamHillIndex, out VCIndex, values);
                         }
 
-                        if (counter > 0)
+                        if (counter > 0 && !reader.EndOfStream)
                         {
                             if (values[1].Length <= 8)
                             {
@@ -269,8 +180,8 @@ namespace SqlOperations
                             {
                                 matchDate = DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture);
                             }
-                            homeTeam = values[2];
-                            awayTeam = values[3];
+                            homeTeam = values[homeTeamIndex];
+                            awayTeam = values[awayTeamIndex];
 
                             //find homeTeamId
                             var homeTeamIdCheck = $"select id from Teams where teamname = @teamName";
@@ -289,183 +200,36 @@ namespace SqlOperations
                                 }
                             }
 
-                            var bet365Select = $"select id from bettingcompanies where BettingCompanyName = ('Bet365')";
-                            using (var bet365 = new SqlCommand(bet365Select, con))
-                            {
-
-                                if (bet365Index == -1 || values[bet365Index] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[bet365Index], culture);
-                                    draw = decimal.Parse(values[bet365Index + 1], culture);
-                                    awayWin = decimal.Parse(values[bet365Index + 2], culture);
-                                }
-
-                                int doubleExist365 = (int)bet365.ExecuteScalar();
-                                if (doubleExist365 > 0)
-                                {
-                                    bet365Id = doubleExist365;
 
 
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", bet365Id);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, bet365Id, bet365Index, homeWin, draw, awayWin, con, values, input, closingHomeBet365, closingDrawBet365, closingAwayBet365);
-                                        }
-                                    }
-                                }
-                            }
 
 
-                            var blueSquareSelect = $"select id from bettingcompanies where BettingCompanyName = ('Blue Square')";
-                            using (var bluewSquare = new SqlCommand(blueSquareSelect, con))
-                            {
-                                if (blueSquareIndex == -1 || values[blueSquareIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[blueSquareIndex], culture);
-                                    draw = decimal.Parse(values[blueSquareIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[blueSquareIndex + 2], culture);
-                                }
-
-                                int doubleExistBlueSquare = (int)bluewSquare.ExecuteScalar();
-                                if (doubleExistBlueSquare > 0)
-                                {
-                                    blueSquareId = doubleExistBlueSquare;
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", blueSquareId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, blueSquareId, blueSquareIndex, homeWin, draw, awayWin, con, values, input, closingHomeBlueSquare, closingDrawBlueSquare, closingAwayBlueSquare);
-                                        }
-                                    }
-                                }
-                            }
-
-                            var betandwinSelect = $"select id from bettingcompanies where BettingCompanyName = ('Bet&Win')";
-                            using (var betandwin = new SqlCommand(betandwinSelect, con))
-                            {
-
-                                if (betAndWinIndex == -1 || values[betAndWinIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[betAndWinIndex], culture);
-                                    draw = decimal.Parse(values[betAndWinIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[betAndWinIndex + 2], culture);
-                                }
-
-                                int doubleExistBetAndWin = (int)betandwin.ExecuteScalar();
-
-                                if (doubleExistBetAndWin > 0)
-                                {
-                                    betAndWinId = doubleExistBetAndWin;
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", betAndWinId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, betAndWinId, betAndWinIndex, homeWin, draw, awayWin, con, values, input, closingHomeBetAndWin, closingDrawBetAndWin, closingAwayBetAndWin);
-                                        }
-                                    }
-                                }
-                            }
 
 
-                            var gameBookersSelect = $"select id from bettingcompanies where BettingCompanyName = ('GameBookers')";
-                            using (var gameBookers = new SqlCommand(gameBookersSelect, con))
-                            {
 
-                                if (gameBookersIndex == -1 || values[gameBookersIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[gameBookersIndex], culture);
-                                    draw = decimal.Parse(values[gameBookersIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[gameBookersIndex + 2], culture);
-                                }
 
-                                int doubleExistGameBookers = (int)gameBookers.ExecuteScalar();
-
-                                if (doubleExistGameBookers > 0)
-                                {
-                                    gameBookersId = doubleExistGameBookers;
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", gameBookersId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, gameBookersId, gameBookersIndex, homeWin, draw, awayWin, con, values, input, closingHomeGameBookers, closingDrawGameBookers, closingAwayGameBookers);
-                                        }
-                                    }
-                                }
-                            }
 
                             var interwettenSelect = $"select id from bettingcompanies where BettingCompanyName = ('Interwetten')";
                             using (var interwetten = new SqlCommand(interwettenSelect, con))
                             {
 
-                                if (interwettenIndex == -1 || values[interwettenIndex] == "")
+                                if (interwettenIndex == -1 || values[interwettenIndex] == "" || values[interwettenIndex + 1] == "" || values[interwettenIndex + 2] == "")
+                                {
+                                    nullValue = null;
+                                }
+                                else if (williamHillIndex == -1 || values[williamHillIndex] == "" || values[williamHillIndex + 1] == "" || values[williamHillIndex + 2] == "")
                                 {
                                     nullValue = null;
                                 }
                                 else
                                 {
-                                    homeWin = decimal.Parse(values[interwettenIndex], culture);
-                                    draw = decimal.Parse(values[interwettenIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[interwettenIndex + 2], culture);
+                                    var interwettenhomeRes = decimal.TryParse(values[interwettenIndex].Replace(".", ","), out interhomeWin);
+                                    var interdrawRes = decimal.TryParse(values[interwettenIndex + 1].Replace(".", ","), out interdraw);
+                                    var interawayWinRes = decimal.TryParse(values[interwettenIndex + 2].Replace(".", ","), out interawayWin);
+
+                                    var whhomeWinRes = decimal.TryParse(values[williamHillIndex].Replace(".", ","), out whhomeWin);
+                                    var whdrawRes = decimal.TryParse(values[williamHillIndex + 1].Replace(".", ","), out whdraw);
+                                    var whawayWinRes = decimal.TryParse(values[williamHillIndex + 2].Replace(".", ","), out whawayWin);
                                 }
                                 int doubleExistInterwetten = (int)interwetten.ExecuteScalar();
 
@@ -473,345 +237,85 @@ namespace SqlOperations
                                 {
                                     interwettenId = doubleExistInterwetten;
 
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
+                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId";
 
                                     using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
                                     {
                                         finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", interwettenId);
+
 
                                         int checkMatchId = (int)finalCheck.ExecuteScalar();
                                         if (checkMatchId > 0)
                                         {
-                                            Console.WriteLine("Duplicates found");
+                                            duplicatesFound++;
                                         }
                                         else if (checkMatchId == 0)
                                         {
 
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, interwettenId, interwettenIndex, homeWin, draw, awayWin, con, values, input, closingHomeInterWetten, closingDrawInterWetten, closingAwayInterWetten);
+                                            var input = $"insert into matchodds(matchid,bettingcompanyid,interwettenhometeamwinodds,interwettendrawteamwinodds,interwettenawayteamwinodds,williamhillhometeamwinodds,williamhilldrawteamwinodds,williamhillawayteamwinodds) values (@matchId,@betId,@interhomeWin,@interdraw,@interawayWin,@whhomeWin,@whdraw,@whawayWin)";
+                                            using (var inputResult = new SqlCommand(input, con))
+                                            {
+                                                if (interwettenIndex == -1 && values[interwettenIndex] == "" && williamHillIndex != -1 && values[williamHillIndex] != "")
+                                                {
+                                                    inputResult.Parameters.AddWithValue("@matchId", matchId);
+                                                    inputResult.Parameters.AddWithValue("@betId", DBNull.Value);
+
+                                                    inputResult.Parameters.AddWithValue("@interhomeWin", DBNull.Value);
+                                                    inputResult.Parameters.AddWithValue("@interdraw", DBNull.Value);
+                                                    inputResult.Parameters.AddWithValue("@interawayWin", DBNull.Value);
+
+                                                    inputResult.Parameters.AddWithValue("@whhomeWin", whhomeWin);
+                                                    inputResult.Parameters.AddWithValue("@whdraw", whdraw);
+                                                    inputResult.Parameters.AddWithValue("@whawayWin", whawayWin);
+
+
+                                                    inputResult.ExecuteNonQuery();
+
+                                                }
+
+                                                else if (interwettenIndex != -1 && values[interwettenIndex] != "" && williamHillIndex == -1 && values[williamHillIndex] == "")
+                                                {
+                                                    inputResult.Parameters.AddWithValue("@matchId", matchId);
+                                                    inputResult.Parameters.AddWithValue("@betId", DBNull.Value);
+
+                                                    inputResult.Parameters.AddWithValue("@interhomeWin", interhomeWin);
+                                                    inputResult.Parameters.AddWithValue("@interdraw", interdraw);
+                                                    inputResult.Parameters.AddWithValue("@interawayWin", interawayWin);
+
+                                                    inputResult.Parameters.AddWithValue("@whhomeWin", DBNull.Value);
+                                                    inputResult.Parameters.AddWithValue("@whdraw", DBNull.Value);
+                                                    inputResult.Parameters.AddWithValue("@whawayWin", DBNull.Value);
+
+
+                                                    inputResult.ExecuteNonQuery();
+
+                                                }
+
+                                                else
+                                                {
+                                                    inputResult.Parameters.AddWithValue("@matchId", matchId);
+                                                    inputResult.Parameters.AddWithValue("@betId", DBNull.Value);
+
+                                                    inputResult.Parameters.AddWithValue("@interhomeWin", interhomeWin);
+                                                    inputResult.Parameters.AddWithValue("@interdraw", interdraw);
+                                                    inputResult.Parameters.AddWithValue("@interawayWin", interawayWin);
+
+                                                    inputResult.Parameters.AddWithValue("@whhomeWin", whhomeWin);
+                                                    inputResult.Parameters.AddWithValue("@whdraw", whdraw);
+                                                    inputResult.Parameters.AddWithValue("@whawayWin", whawayWin);
+
+
+                                                    inputResult.ExecuteNonQuery();
+                                                }
+
+
+                                            }
+                                            // InsertIntoMatchOdds(matchId, interwettenId, interwettenIndex, homeWin, draw, awayWin, con, values, input, ref pushedNullValue, ref pushedToDb);
                                         }
                                     }
                                 }
                             }
 
-                            var ladbrokersSelect = $"select id from bettingcompanies where BettingCompanyName = ('Ladbrokes')";
-                            using (var ladbrokers = new SqlCommand(ladbrokersSelect, con))
-                            {
-
-                                if (ladbrokersIndex == -1 || values[ladbrokersIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[ladbrokersIndex], culture);
-                                    draw = decimal.Parse(values[ladbrokersIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[ladbrokersIndex + 2], culture);
-                                }
-                                int doubleExistLadbrokers = (int)ladbrokers.ExecuteScalar();
-                                if (doubleExistLadbrokers > 0)
-                                {
-                                    ladbrokersId = doubleExistLadbrokers;
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", ladbrokersId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, ladbrokersId, ladbrokersIndex, homeWin, draw, awayWin, con, values, input, closingHomeLadbrookers, closingDrawLadbrookers, closingAwayLadbrookers);
-                                        }
-                                    }
-                                }
-                            }
-
-                            var pinnacleSelect = $"select id from bettingcompanies where BettingCompanyName = ('Pinnacle')";
-                            using (var pinnacle = new SqlCommand(pinnacleSelect, con))
-                            {
-                                if (pinnacleIndex == -1 || values[pinnacleIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[pinnacleIndex], culture);
-                                    draw = decimal.Parse(values[pinnacleIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[pinnacleIndex + 2], culture);
-                                }
-                                int doubleExistPinnacle = (int)pinnacle.ExecuteScalar();
-
-                                if (doubleExistPinnacle > 0)
-                                {
-                                    pinnacleId = doubleExistPinnacle;
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", pinnacleId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, pinnacleId, pinnacleIndex, homeWin, draw, awayWin, con, values, input, closingHomePinnacle, closingDrawPinnacle, closingAwayPinnacle);
-                                        }
-                                    }
-                                }
-                            }
-
-                            var sportingOddsSelect = $"select id from bettingcompanies where BettingCompanyName = ('Sporting Odds')";
-                            using (var sportingOdds = new SqlCommand(sportingOddsSelect, con))
-                            {
-
-                                if (sportingOddsIndex == -1 || values[sportingOddsIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[sportingOddsIndex], culture);
-                                    draw = decimal.Parse(values[sportingOddsIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[sportingOddsIndex + 2], culture);
-                                }
-                                int doubleExistSportingOdds = (int)sportingOdds.ExecuteScalar();
-
-                                if (doubleExistSportingOdds > 0)
-                                {
-                                    sportingOddsId = doubleExistSportingOdds;
-
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", sportingOddsId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, sportingOddsId, sportingOddsIndex, homeWin, draw, awayWin, con, values, input, closingHomeSportingOdds, closingDrawSportingOdds, closingAwaySportingOdds);
-                                        }
-                                    }
-                                }
-                            }
-
-
-                            var sportingBetSelect = $"select id from bettingcompanies where BettingCompanyName = ('Sportingbet')";
-                            using (var sportingBet = new SqlCommand(sportingBetSelect, con))
-                            {
-
-                                if (sportingBetIndex == -1 || values[sportingBetIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[sportingBetIndex], culture);
-                                    draw = decimal.Parse(values[sportingBetIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[sportingBetIndex + 2], culture);
-                                }
-                                int doubleExistSportingBet = (int)sportingBet.ExecuteScalar();
-                                if (doubleExistSportingBet > 0)
-                                {
-                                    sportingBetId = doubleExistSportingBet;
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", sportingBetId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, sportingBetId, sportingBetIndex, homeWin, draw, awayWin, con, values, input, closingHomeSportingBet, closingDrawSportingBet, closingAwaySportingBet);
-                                        }
-                                    }
-                                }
-                            }
-
-
-                            var stanJamesSelect = $"select id from bettingcompanies where BettingCompanyName = ('Stan James')";
-                            using (var stanJames = new SqlCommand(stanJamesSelect, con))
-                            {
-
-                                if (stanJamesIndex == -1 || values[stanJamesIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[stanJamesIndex], culture);
-                                    draw = decimal.Parse(values[stanJamesIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[stanJamesIndex + 2], culture);
-                                }
-                                int doubleExistStanJames = (int)stanJames.ExecuteScalar();
-                                if (doubleExistStanJames > 0)
-                                {
-                                    stanJamesId = doubleExistStanJames;
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", stanJamesId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, stanJamesId, stanJamesIndex, homeWin, draw, awayWin, con, values, input, closingHomeStanJames, closingDrawStanJames, closingAwayStanJames);
-                                        }
-                                    }
-                                }
-                            }
-
-
-                            var stanleyBetSelect = $"select id from bettingcompanies where BettingCompanyName = ('Stanleybet')";
-                            using (var stanley = new SqlCommand(stanleyBetSelect, con))
-                            {
-
-                                if (stanleyBetIndex == -1 || values[stanleyBetIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[stanleyBetIndex], culture);
-                                    draw = decimal.Parse(values[stanleyBetIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[stanleyBetIndex + 2], culture);
-                                }
-                                int doubleExistStanley = (int)stanley.ExecuteScalar();
-                                if (doubleExistStanley > 0)
-                                {
-                                    stanleyBetId = doubleExistStanley;
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", stanleyBetId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, stanleyBetId, stanleyBetIndex, homeWin, draw, awayWin, con, values, input, closingHomeStanleybey, closingDrawStanleybey, closingAwayStanleybey);
-                                        }
-                                    }
-                                }
-                            }
-
-                            var williamHillSelect = $"select id from bettingcompanies where BettingCompanyName = ('William Hill')";
-                            using (var williamHill = new SqlCommand(williamHillSelect, con))
-                            {
-
-                                if (williamHillIndex == -1 || values[williamHillIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[williamHillIndex], culture);
-                                    draw = decimal.Parse(values[williamHillIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[williamHillIndex + 2], culture);
-                                }
-                                int doubleExistWilliamHill = (int)williamHill.ExecuteScalar();
-
-                                if (doubleExistWilliamHill > 0)
-                                {
-                                    williamHillId = doubleExistWilliamHill;
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", williamHillId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, williamHillId, williamHillIndex, homeWin, draw, awayWin, con, values, input, closingHomeWilliamHill, closingDrawWilliamHill, closingAwayWilliamHill);
-                                        }
-                                    }
-                                }
-                            }
-
-                            var VCBetSelect = $"select id from bettingcompanies where BettingCompanyName = ('VC Bet')";
-                            using (var VCBet = new SqlCommand(VCBetSelect, con))
-                            {
-                                if (VCIndex == -1 || values[VCIndex] == "")
-                                {
-                                    nullValue = null;
-                                }
-                                else
-                                {
-                                    homeWin = decimal.Parse(values[VCIndex], culture);
-                                    draw = decimal.Parse(values[VCIndex + 1], culture);
-                                    awayWin = decimal.Parse(values[VCIndex + 2], culture);
-                                }
-                                int doubleExistVCBet = (int)VCBet.ExecuteScalar();
-
-                                if (doubleExistVCBet > 0)
-                                {
-                                    VCBetId = doubleExistVCBet;
-
-                                    var checkMatchIdAndBettingId = $"select count(*) from matchodds where matchId = @currentMatchId and bettingCompanyId = @bettingId ";
-                                    using (var finalCheck = new SqlCommand(checkMatchIdAndBettingId, con))
-                                    {
-                                        finalCheck.Parameters.AddWithValue("@currentMatchId", matchId);
-                                        finalCheck.Parameters.AddWithValue("@bettingId", VCBetId);
-
-                                        int checkMatchId = (int)finalCheck.ExecuteScalar();
-                                        if (checkMatchId > 0)
-                                        {
-                                            Console.WriteLine("Duplicates found");
-                                        }
-                                        else if (checkMatchId == 0)
-                                        {
-                                            var input = $"insert into matchodds(matchid,bettingcompanyid,hometeamwinodds,drawteamwinodds,awayteamwinodds,closinghome,closingdraw,closingaway) values (@matchId,@betId,@homeWin,@draw,@awayWin,@closingHome,@closingDraw,@closingAway)";
-                                            InsertIntoMatchOdds(matchId, VCBetId, VCIndex, homeWin, draw, awayWin, con, values, input, closingHomeVCBet, closingDrawVCBet, closingAwayVCBet);
-                                        }
-                                    }
-                                }
-                            }
                             matchOdds.Clear();
                         }
                         counter++;
@@ -819,9 +323,19 @@ namespace SqlOperations
                     reader.Close();
                 }
             }
+            var message = $"MatchData\nDouble records found: {duplicatesFound}, null value pushed: {pushedNullValue}, record pushed to db: {pushedToDb}";
+            return message;
         }
 
-        private static void InsertIntoMatchOdds(int matchId, int betId, int betIndex, decimal homeWin, decimal draw, decimal awayWin, SqlConnection con, string[] values, string input, int closingHomeIndex, int closingDrawIndex, int closingAwayIndex)
+
+
+
+
+
+
+
+
+        private static void InsertIntoMatchOdds(int matchId, int betId, int betIndex, decimal homeWin, decimal draw, decimal awayWin, SqlConnection con, string[] values, string input, ref int nullValue, ref int pushedToDatabase)
         {
             using (var inputResult = new SqlCommand(input, con))
             {
@@ -832,23 +346,10 @@ namespace SqlOperations
                     inputResult.Parameters.AddWithValue("@homeWin", DBNull.Value);
                     inputResult.Parameters.AddWithValue("@draw", DBNull.Value);
                     inputResult.Parameters.AddWithValue("@awayWin", DBNull.Value);
-                    if (closingHomeIndex == -1)
-                        inputResult.Parameters.AddWithValue("@closingHome", DBNull.Value);
-                    else
-                        inputResult.Parameters.AddWithValue("@closingHome", values[closingHomeIndex]);
 
-                    if (closingDrawIndex == -1)
-                        inputResult.Parameters.AddWithValue("@closingDraw", DBNull.Value);
-                    else
-                        inputResult.Parameters.AddWithValue("@closingDraw", values[closingDrawIndex]);
-
-                    if (closingAwayIndex == -1)
-                        inputResult.Parameters.AddWithValue("@closingAway", DBNull.Value);
-                    else
-                        inputResult.Parameters.AddWithValue("@closingAway", values[closingAwayIndex]);
 
                     inputResult.ExecuteNonQuery();
-                    Console.WriteLine("Null value Pushed to database!");
+                    nullValue++;
                 }
                 else if (betIndex != -1)
                 {
@@ -858,265 +359,29 @@ namespace SqlOperations
                     inputResult.Parameters.AddWithValue("@draw", Convert.ToDecimal(draw));
                     inputResult.Parameters.AddWithValue("@awayWin", Convert.ToDecimal(awayWin));
 
-                    if (closingHomeIndex == -1)
-                        inputResult.Parameters.AddWithValue("@closingHome", DBNull.Value);
-                    else
-                        inputResult.Parameters.AddWithValue("@closingHome", values[closingHomeIndex]);
-
-                    if (closingDrawIndex == -1)
-                        inputResult.Parameters.AddWithValue("@closingDraw", DBNull.Value);
-                    else
-                        inputResult.Parameters.AddWithValue("@closingDraw", values[closingDrawIndex]);
-
-                    if (closingAwayIndex == -1)
-                        inputResult.Parameters.AddWithValue("@closingAway", DBNull.Value);
-                    else
-                        inputResult.Parameters.AddWithValue("@closingAway", values[closingAwayIndex]);
 
 
                     inputResult.ExecuteNonQuery();
-                    Console.WriteLine("Record Pushed to database!");
+                    pushedToDatabase++;
                 }
             }
         }
 
-        private void PushSpecificMatchData()
+       
+        
+
+
+        private string PushDataToMatches()
         {
 
-            //TODO: kolla upp vilket index alla kolumner har:
-            DateOnly MatchDate;
-            string HomeTeam = "";
-            string AwayTeam = "";
-            int matchId = 0;
-            int homeTeamId = 0;
-            int awayTeamId = 0;
-            int startIndex = 0;
-
-            decimal Bb1X2 = 0;
-            decimal BbMxH = 0;
-            decimal BbAvH = 0;
-            decimal BbMxD = 0;
-            decimal BbAvD = 0;
-            decimal BbMxA = 0;
-            decimal BbAvA = 0;
-            decimal BbOU = 0;
-            decimal BbMxGT25 = 0;
-            decimal BbAvGT25 = 0;
-            decimal BbMxLT25 = 0;
-            decimal BbAvLT25 = 0;
-            decimal BbAH = 0;
-            decimal BbAHH = 0;
-            decimal BbMxAHH = 0;
-            decimal BbAvAHH = 0;
-            decimal BbMxAHA = 0;
-            decimal BbAvAHA = 0;
-            decimal PSCH = 0;
-            decimal PSCD = 0;
-            decimal PSCA = 0;
-            decimal MaxH = 0;
-            decimal MaxD = 0;
-            decimal MaxA = 0;
-            decimal AvgH = 0;
-            decimal AvgD = 0;
-            decimal AvgA = 0;
-            decimal B365GT2Point5 = 0;
-            decimal B365LT2Point5 = 0;
-            decimal PGT2Point5 = 0;
-            decimal PLT2Point5 = 0;
-            decimal MaxGT2Point5 = 0;
-            decimal MaxLT2Point5 = 0;
-            decimal AvgGT2Point5 = 0;
-            decimal AvgLT2Point5 = 0;
-            decimal AHh = 0;
-            decimal B365AHH = 0;
-            decimal B365AHA = 0;
-            decimal PAHH = 0;
-            decimal PAHA = 0;
-            decimal MaxAHH = 0;
-            decimal MaxAHA = 0;
-            decimal AvgAHH = 0;
-            decimal AvhAHA = 0;
-            decimal MaxCH = 0;
-            decimal MaxCD = 0;
-            decimal MaxCA = 0;
-            decimal AvgCH = 0;
-            decimal AvgCD = 0;
-            decimal AvgCA = 0;
-            decimal Bet365CGT2Point5 = 0;
-            decimal Bet365CLT2Point5 = 0;
-            decimal PCGT2Point5 = 0;
-            decimal PCLT2Point5 = 0;
-            decimal MaxCGT2Point5 = 0;
-            decimal MaxCLT2Point5 = 0;
-            decimal AvgCGT2Point5 = 0;
-            decimal AvgCLT2Point5 = 0;
-            decimal AHCH = 0;
-            decimal B365CAHH = 0;
-            decimal B365CAHA = 0;
-            decimal PCAHH = 0;
-            decimal PCAHA = 0;
-            decimal MaxCAHH = 0;
-            decimal MaxCAHA = 0;
-            decimal AvgCAHH = 0;
-            decimal AvgCAHA = 0;
-
-
-
-
-            CultureInfo culture = CultureInfo.InvariantCulture;
-            List<string> specificList = new List<string>();
-
-            using (StreamReader reader = new StreamReader($"{FilePath}"))
-            {
-                int counter = 0;
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    var values = line.Split(';', ',');
-
-                    if (counter == 0)
-                    {
-                        int index = Array.IndexOf(values, "Bb1X2");
-                        startIndex = index;
-                        Console.WriteLine("Bb1X2 found");
-                        if (values.Contains("Referee"))
-                        {
-                            IsEnglish = true;
-                        }
-                        else
-                        {
-                            IsEnglish = false;
-                        }
-                    }
-
-                    else if (counter > 0)
-                    {
-                        for (int i = startIndex; i < values.Length; i++)
-                        {
-                            specificList.Add(values[i].ToString());
-                        }
-
-                        if (values[1].Length <= 8)
-                        {
-                            MatchDate = ConvertDate(values);
-                        }
-                        else
-                        {
-                            MatchDate = (DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture));
-                        }
-                        HomeTeam = (values[2]);
-                        AwayTeam = (values[3]);
-
-                        using (var con = new SqlConnection($"{DatabaseConnectionString}"))
-                        {
-                            con.Open();
-                            var homeTeamCheck = $"select id from teams where teamname = @HomeTeam";
-                            using (var first = new SqlCommand(homeTeamCheck, con))
-                            {
-                                first.Parameters.AddWithValue("@HomeTeam", HomeTeam);
-                                int doubleValues = (int)first.ExecuteScalar();
-                                if (doubleValues > 0)
-                                    homeTeamId = doubleValues;
-
-                            }
-                            var awayTeamCheck = $"select id from teams where teamname = @AwayTeam";
-                            using (var first = new SqlCommand(awayTeamCheck, con))
-                            {
-                                first.Parameters.AddWithValue("@AwayTeam", AwayTeam);
-                                int doubleValues = (int)first.ExecuteScalar();
-                                if (doubleValues > 0)
-                                    awayTeamId = doubleValues;
-                            }
-
-                            var matchDateIdCheck = $"select id from matches where homeTeamId = ('{homeTeamId}') and awayTeamId = ('{awayTeamId}') and matchDate = ('{MatchDate}')";
-                            using (var first = new SqlCommand(matchDateIdCheck, con))
-                            {
-                                int doubleValues = (int)first.ExecuteScalar();
-                                if (doubleValues > 0)
-                                    matchId = doubleValues;
-                            }
-
-                            //kolla upp dubletter
-                            var doubleRecord = $"select count(*) from SpecificBettingOdds where matchId = ('{matchId}')";
-                            using (var first = new SqlCommand(doubleRecord, con))
-                            {
-                                int doubleValues = (int)first.ExecuteScalar();
-                                if (doubleValues > 0)
-                                {
-                                    Console.WriteLine("Duplicates found!");
-                                }
-                                else if (doubleValues == 0)
-                                {
-                                     Bb1X2 = decimal.Parse(specificList[0], culture);
-                                     BbMxH = decimal.Parse(specificList[1], culture);
-                                     BbAvH = decimal.Parse(specificList[2], culture);
-                                     BbMxD = decimal.Parse(specificList[3], culture);
-                                     BbAvD = decimal.Parse(specificList[4], culture);
-                                     BbMxA = decimal.Parse(specificList[5], culture);
-                                     BbAvA = decimal.Parse(specificList[6], culture);
-                                     BbOU = decimal.Parse(specificList[7], culture);
-                                     BbMxGT25 = decimal.Parse(specificList[8], culture);
-                                     BbAvGT25 = decimal.Parse(specificList[9], culture);
-                                     BbMxLT25 = decimal.Parse(specificList[10], culture);
-                                     BbAvLT25 = decimal.Parse(specificList[11], culture);
-                                     BbAH = decimal.Parse(specificList[12], culture);
-                                     BbAHH = decimal.Parse(specificList[13], culture);
-                                     BbMxAHH = decimal.Parse(specificList[14], culture);
-                                     BbAvAHH = decimal.Parse(specificList[15], culture);
-                                     BbMxAHA = decimal.Parse(specificList[16], culture);
-                                     BbAvAHA = decimal.Parse(specificList[17], culture);
-                                     PSCH = decimal.Parse(specificList[18], culture);
-                                     PSCD = decimal.Parse(specificList[19], culture);
-                                     PSCA = decimal.Parse(specificList[20], culture);
-
-                                    var input = $"insert into specificbettingodds(matchId,bB1X2,BbMxH,BbAvH,BbMxD,BbAvD,BbMxA,BbAvA,BbOU,BbMxGT25,BbAvGT25,BbMxLT25,BbAvLT25,BbAH,BbAHH,BbMxAHH,BbAvAHH,BbMxAHA,BbAvAHA,PSCH,PSCD,PSCA)" +
-                                        $"values (@matchId,@bB1x2,@BbMxH,@BbAvH,@BbMxD,@BbAvD,@BbMxA,@BbAvA,@BbOU,@BbMxGT25,@BbAvGT25,@BbMxLT25,@BbAvLT25,@BbAH,@BbAHH,@BbMxAHH,@BbAvAHH,@BbMxAHA,@BbAvAHA,@PSCH,@PSCD,@PSCA)";
-
-                                    using (var inputResult = new SqlCommand(input, con))
-                                    {
-                                        inputResult.Parameters.AddWithValue("@matchId", matchId);
-                                        inputResult.Parameters.AddWithValue("@bB1x2", Convert.ToDouble(bB1X2));
-                                        inputResult.Parameters.AddWithValue("@BbMxH", Convert.ToDouble(BbMxH));
-                                        inputResult.Parameters.AddWithValue("@BbAvH", Convert.ToDouble(BbAvH));
-                                        inputResult.Parameters.AddWithValue("@BbMxD", Convert.ToDouble(BbMxD));
-                                        inputResult.Parameters.AddWithValue("@BbAvD", Convert.ToDouble(BbAvD));
-                                        inputResult.Parameters.AddWithValue("@BbMxA", Convert.ToDouble(BbMxA));
-                                        inputResult.Parameters.AddWithValue("@BbAvA", Convert.ToDouble(BbAvA));
-                                        inputResult.Parameters.AddWithValue("@BbOU", Convert.ToDouble(BbOU));
-
-                                        inputResult.Parameters.AddWithValue("@BbMxGT25", Convert.ToDouble(BbMxGT25));
-                                        inputResult.Parameters.AddWithValue("@BbAvGT25", Convert.ToDouble(BbAvGT25));
-                                        inputResult.Parameters.AddWithValue("@BbMxLT25", Convert.ToDouble(BbMxLT25));
-                                        inputResult.Parameters.AddWithValue("@BbAvLT25", Convert.ToDouble(BbAvLT25));
-                                        inputResult.Parameters.AddWithValue("@BbAH", Convert.ToDouble(BbAH));
-                                        inputResult.Parameters.AddWithValue("@BbAHH", Convert.ToDouble(BbAHH));
-                                        inputResult.Parameters.AddWithValue("@BbMxAHH", Convert.ToDouble(BbMxAHH));
-                                        inputResult.Parameters.AddWithValue("@BbAvAHH", Convert.ToDouble(BbAvAHH));
-                                        inputResult.Parameters.AddWithValue("@BbMxAHA", Convert.ToDouble(BbMxAHA));
-                                        inputResult.Parameters.AddWithValue("@BbAvAHA", Convert.ToDouble(BbAvAHA));
-                                        inputResult.Parameters.AddWithValue("@PSCH", Convert.ToDouble(PSCH));
-                                        inputResult.Parameters.AddWithValue("@PSCD", Convert.ToDouble(PSCD));
-                                        inputResult.Parameters.AddWithValue("@PSCA", Convert.ToDouble(PSCA));
-
-                                        inputResult.ExecuteNonQuery();
-                                        Console.WriteLine("Record Pushed to database!");
-                                        specificList.Clear();
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                    counter++;
-                }
-            }
-        }
-
-
-        private void PushDataToMatches()
-        {
+            int pushedToDB = 0;
+            int pushedNullToDb = 0;
+            int foundDoubles = 0;
             int attendenceIndex = 0;
 
+
+            var homeTeamIndex = 0;
+            var awayTeamIndex = 0;
             var country = "";
             int countryId = 0;
             int leagueId = 0;
@@ -1166,6 +431,11 @@ namespace SqlOperations
                     values = line.Split(',', ';');
                     if (counter == 0)
                     {
+
+
+                        homeTeamIndex = Array.IndexOf(values, "HomeTeam");
+                        awayTeamIndex = Array.IndexOf(values, "AwayTeam");
+
                         if (values.Contains("Referee"))
                         {
                             country = "England";
@@ -1193,15 +463,15 @@ namespace SqlOperations
                         div = values[0].ToString();
                     }
 
-                    if (counter > 0)
+                    if (counter > 0 && !reader.EndOfStream)
                     {
                         if (values[1].Length <= 8)
                             MatchDate = ConvertDate(values);
                         else
                             MatchDate = (DateOnly.ParseExact(values[1], "dd/MM/yyyy", CultureInfo.InvariantCulture));
 
-                        HomeTeam = (values[2]);
-                        AwayTeam = (values[3]);
+                        HomeTeam = (values[homeTeamIndex]);
+                        AwayTeam = (values[awayTeamIndex]);
                         using (var con = new SqlConnection($"{DatabaseConnectionString}"))
                         {
                             con.Open();
@@ -1253,6 +523,7 @@ namespace SqlOperations
                                 if (values[HTRIndex + 2].Contains("\""))
                                 {
                                     Referee = values[HTRIndex + 2] + values[HTRIndex + 3];
+                                    Referee = Referee.Replace(@"""", String.Empty);
                                 }
 
 
@@ -1309,7 +580,8 @@ namespace SqlOperations
                                     var rowExist = (int)englanResult.ExecuteScalar();
                                     if (rowExist > 0)
                                     {
-                                        Console.WriteLine("Record already exist");
+                                        foundDoubles++;
+
                                     }
                                     else if (rowExist == 0)
                                     {
@@ -1320,7 +592,7 @@ namespace SqlOperations
                                                 var rowExistHere = (int)inputResult.ExecuteScalar();
                                                 if (rowExistHere > 0)
                                                 {
-                                                    Console.WriteLine("Record already exists!");
+                                                    foundDoubles++;
                                                 }
                                                 else if (rowExistHere == 0)
                                                 {
@@ -1351,7 +623,8 @@ namespace SqlOperations
                                                         insertCommand.Parameters.AddWithValue("@HR", HR);
                                                         insertCommand.Parameters.AddWithValue("@AR", AR);
                                                         insertCommand.ExecuteNonQuery();
-                                                        Console.WriteLine("Record Pushed to database!");
+
+                                                        pushedToDB++;
                                                     }
                                                 }
                                             }
@@ -1385,96 +658,103 @@ namespace SqlOperations
                                                 insertCommand.Parameters.AddWithValue("@HR", HR);
                                                 insertCommand.Parameters.AddWithValue("@AR", AR);
                                                 insertCommand.ExecuteNonQuery();
-                                                Console.WriteLine("Record Pushed to database!");
+
+                                                pushedToDB++;
                                             }
                                         }
                                     }
                                 }
-                                if (country != "England")
-                                {
-                                    using (var inputResult = new SqlCommand(checkInsertOperation, con))
-                                    {
-                                        var rowExist = (int)inputResult.ExecuteScalar();
-                                        if (rowExist > 0)
-                                        {
-                                            Console.WriteLine("Record already exists!");
-                                        }
-                                        else if (rowExist == 0)
-                                        {
-                                            if (attendenceIndex != -1)
-                                            {
-                                                using (var inputResultGermany = new SqlCommand(checkInsertOperation, con))
-                                                {
-                                                    var rowExistHere = (int)inputResult.ExecuteScalar();
-                                                    if (rowExistHere > 0)
-                                                    {
-                                                        Console.WriteLine("Record already exists!");
-                                                    }
-                                                    else if (rowExistHere == 0)
-                                                    {
-                                                        using (var insertCommand = new SqlCommand(insertOperationGermany, con))
-                                                        {
 
-                                                            insertCommand.Parameters.AddWithValue("@homeTeamId", homeTeamId);
-                                                            insertCommand.Parameters.AddWithValue("@awayTeamId", awayTeamId);
-                                                            insertCommand.Parameters.AddWithValue("@seasonId", seasonId);
-                                                            insertCommand.Parameters.AddWithValue("@FTHG", FTHG);
-                                                            insertCommand.Parameters.AddWithValue("@FTAG", FTAG);
-                                                            insertCommand.Parameters.AddWithValue("@FTR", FTR);
-                                                            insertCommand.Parameters.AddWithValue("@HTHG", HTHG);
-                                                            insertCommand.Parameters.AddWithValue("@HTAG", HTAG);
-                                                            insertCommand.Parameters.AddWithValue("@HTR", HTR);
-                                                            insertCommand.Parameters.AddWithValue("@attendence", Attendence);
-                                                            insertCommand.Parameters.AddWithValue("@Referee", DBNull.Value);
-                                                            insertCommand.Parameters.AddWithValue("@HS", HS);
-                                                            insertCommand.Parameters.AddWithValue("@AS", AS);
-                                                            insertCommand.Parameters.AddWithValue("@HST", HST);
-                                                            insertCommand.Parameters.AddWithValue("@AST", AST);
-                                                            insertCommand.Parameters.AddWithValue("@HF", HF);
-                                                            insertCommand.Parameters.AddWithValue("@AF", AF);
-                                                            insertCommand.Parameters.AddWithValue("@HC", HC);
-                                                            insertCommand.Parameters.AddWithValue("@AC", AC);
-                                                            insertCommand.Parameters.AddWithValue("@HY", HY);
-                                                            insertCommand.Parameters.AddWithValue("@AY", AY);
-                                                            insertCommand.Parameters.AddWithValue("@HR", HR);
-                                                            insertCommand.Parameters.AddWithValue("@AR", AR);
-                                                            insertCommand.ExecuteNonQuery();
-                                                            Console.WriteLine("Record Pushed to database!");
-                                                        }
+                            }
+
+
+
+                            if (country != "England")
+                            {
+                                using (var inputResult = new SqlCommand(checkInsertOperation, con))
+                                {
+                                    var rowExist = (int)inputResult.ExecuteScalar();
+                                    if (rowExist > 0)
+                                    {
+                                        foundDoubles++;
+                                    }
+                                    else if (rowExist == 0)
+                                    {
+                                        if (attendenceIndex != -1)
+                                        {
+                                            using (var inputResultGermany = new SqlCommand(checkInsertOperation, con))
+                                            {
+                                                var rowExistHere = (int)inputResult.ExecuteScalar();
+                                                if (rowExistHere > 0)
+                                                {
+                                                    foundDoubles++;
+                                                }
+                                                else if (rowExistHere == 0)
+                                                {
+                                                    using (var insertCommand = new SqlCommand(insertOperationGermany, con))
+                                                    {
+
+                                                        insertCommand.Parameters.AddWithValue("@homeTeamId", homeTeamId);
+                                                        insertCommand.Parameters.AddWithValue("@awayTeamId", awayTeamId);
+                                                        insertCommand.Parameters.AddWithValue("@seasonId", seasonId);
+                                                        insertCommand.Parameters.AddWithValue("@FTHG", FTHG);
+                                                        insertCommand.Parameters.AddWithValue("@FTAG", FTAG);
+                                                        insertCommand.Parameters.AddWithValue("@FTR", FTR);
+                                                        insertCommand.Parameters.AddWithValue("@HTHG", HTHG);
+                                                        insertCommand.Parameters.AddWithValue("@HTAG", HTAG);
+                                                        insertCommand.Parameters.AddWithValue("@HTR", HTR);
+                                                        insertCommand.Parameters.AddWithValue("@attendence", Attendence);
+                                                        insertCommand.Parameters.AddWithValue("@Referee", DBNull.Value);
+                                                        insertCommand.Parameters.AddWithValue("@HS", HS);
+                                                        insertCommand.Parameters.AddWithValue("@AS", AS);
+                                                        insertCommand.Parameters.AddWithValue("@HST", HST);
+                                                        insertCommand.Parameters.AddWithValue("@AST", AST);
+                                                        insertCommand.Parameters.AddWithValue("@HF", HF);
+                                                        insertCommand.Parameters.AddWithValue("@AF", AF);
+                                                        insertCommand.Parameters.AddWithValue("@HC", HC);
+                                                        insertCommand.Parameters.AddWithValue("@AC", AC);
+                                                        insertCommand.Parameters.AddWithValue("@HY", HY);
+                                                        insertCommand.Parameters.AddWithValue("@AY", AY);
+                                                        insertCommand.Parameters.AddWithValue("@HR", HR);
+                                                        insertCommand.Parameters.AddWithValue("@AR", AR);
+                                                        insertCommand.ExecuteNonQuery();
+
+                                                        pushedToDB++;
                                                     }
                                                 }
                                             }
-                                            else
+                                        }
+                                        else
+                                        {
+                                            using (var insertCommand = new SqlCommand(insertOperationGermany, con))
                                             {
-                                                using (var insertCommand = new SqlCommand(insertOperationGermany, con))
-                                                {
 
-                                                    insertCommand.Parameters.AddWithValue("@homeTeamId", homeTeamId);
-                                                    insertCommand.Parameters.AddWithValue("@awayTeamId", awayTeamId);
-                                                    insertCommand.Parameters.AddWithValue("@seasonId", seasonId);
-                                                    insertCommand.Parameters.AddWithValue("@FTHG", FTHG);
-                                                    insertCommand.Parameters.AddWithValue("@FTAG", FTAG);
-                                                    insertCommand.Parameters.AddWithValue("@FTR", FTR);
-                                                    insertCommand.Parameters.AddWithValue("@HTHG", HTHG);
-                                                    insertCommand.Parameters.AddWithValue("@HTAG", HTAG);
-                                                    insertCommand.Parameters.AddWithValue("@HTR", HTR);
-                                                    insertCommand.Parameters.AddWithValue("@attendence", DBNull.Value);
-                                                    insertCommand.Parameters.AddWithValue("@Referee", DBNull.Value);
-                                                    insertCommand.Parameters.AddWithValue("@HS", HS);
-                                                    insertCommand.Parameters.AddWithValue("@AS", AS);
-                                                    insertCommand.Parameters.AddWithValue("@HST", HST);
-                                                    insertCommand.Parameters.AddWithValue("@AST", AST);
-                                                    insertCommand.Parameters.AddWithValue("@HF", HF);
-                                                    insertCommand.Parameters.AddWithValue("@AF", AF);
-                                                    insertCommand.Parameters.AddWithValue("@HC", HC);
-                                                    insertCommand.Parameters.AddWithValue("@AC", AC);
-                                                    insertCommand.Parameters.AddWithValue("@HY", HY);
-                                                    insertCommand.Parameters.AddWithValue("@AY", AY);
-                                                    insertCommand.Parameters.AddWithValue("@HR", HR);
-                                                    insertCommand.Parameters.AddWithValue("@AR", AR);
-                                                    insertCommand.ExecuteNonQuery();
-                                                    Console.WriteLine("Record Pushed to database!");
-                                                }
+                                                insertCommand.Parameters.AddWithValue("@homeTeamId", homeTeamId);
+                                                insertCommand.Parameters.AddWithValue("@awayTeamId", awayTeamId);
+                                                insertCommand.Parameters.AddWithValue("@seasonId", seasonId);
+                                                insertCommand.Parameters.AddWithValue("@FTHG", FTHG);
+                                                insertCommand.Parameters.AddWithValue("@FTAG", FTAG);
+                                                insertCommand.Parameters.AddWithValue("@FTR", FTR);
+                                                insertCommand.Parameters.AddWithValue("@HTHG", HTHG);
+                                                insertCommand.Parameters.AddWithValue("@HTAG", HTAG);
+                                                insertCommand.Parameters.AddWithValue("@HTR", HTR);
+                                                insertCommand.Parameters.AddWithValue("@attendence", DBNull.Value);
+                                                insertCommand.Parameters.AddWithValue("@Referee", DBNull.Value);
+                                                insertCommand.Parameters.AddWithValue("@HS", HS);
+                                                insertCommand.Parameters.AddWithValue("@AS", AS);
+                                                insertCommand.Parameters.AddWithValue("@HST", HST);
+                                                insertCommand.Parameters.AddWithValue("@AST", AST);
+                                                insertCommand.Parameters.AddWithValue("@HF", HF);
+                                                insertCommand.Parameters.AddWithValue("@AF", AF);
+                                                insertCommand.Parameters.AddWithValue("@HC", HC);
+                                                insertCommand.Parameters.AddWithValue("@AC", AC);
+                                                insertCommand.Parameters.AddWithValue("@HY", HY);
+                                                insertCommand.Parameters.AddWithValue("@AY", AY);
+                                                insertCommand.Parameters.AddWithValue("@HR", HR);
+                                                insertCommand.Parameters.AddWithValue("@AR", AR);
+                                                insertCommand.ExecuteNonQuery();
+
+                                                pushedToDB++;
                                             }
                                         }
                                     }
@@ -1485,6 +765,10 @@ namespace SqlOperations
                     counter++;
                 }
             }
+            string message;
+            message = $"Found {foundDoubles} double records and pushed {pushedToDB} records";
+            return message;
+
         }
 
         private static int CheckOnTeam(string HomeTeam, int homeTeamId, SqlConnection con, string checkOnHomeTeam)
