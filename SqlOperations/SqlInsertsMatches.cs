@@ -21,7 +21,7 @@ namespace SqlOperations
 
 
             Console.WriteLine(message);
-            //Console.WriteLine(message2);
+            Console.WriteLine(message2);
 
         }
 
@@ -327,14 +327,6 @@ namespace SqlOperations
             return message;
         }
 
-
-
-
-
-
-
-
-
         private static void InsertIntoMatchOdds(int matchId, int betId, int betIndex, decimal homeWin, decimal draw, decimal awayWin, SqlConnection con, string[] values, string input, ref int nullValue, ref int pushedToDatabase)
         {
             using (var inputResult = new SqlCommand(input, con))
@@ -366,10 +358,6 @@ namespace SqlOperations
                 }
             }
         }
-
-       
-        
-
 
         private string PushDataToMatches()
         {

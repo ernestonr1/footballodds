@@ -16,19 +16,50 @@ namespace SqlOperations
             ConnectionString = connectionString;
         }
 
-        private void CreateDatabase()
+        public void CreateDatabase()
         {
             string connectionStringDb = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
-            using (SqlConnection con = new SqlConnection(connectionStringDb))
+
+            var isCreated = CheckDatabaseExists("FootballManager");
+            if (isCreated)
             {
-                string query = @"CREATE DATABASE FootballManager";
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                Console.WriteLine("Already Created");
+            }
+            else
+            {
+
+                using (SqlConnection con = new SqlConnection(connectionStringDb))
                 {
-                    con.Open();
-                    cmd.ExecuteNonQuery();
+                    string query = @"CREATE DATABASE FootballManager";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                    }
                 }
             }
+        }
+
+
+        private bool CheckDatabaseExists(string dataBase)
+        {
+            string conStr = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            string cmdText = "SELECT * FROM master.dbo.sysdatabases WHERE name ='" + dataBase + "'";
+            bool isExist = false;
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                con.Open();
+                using (SqlCommand cmd = new SqlCommand(cmdText, con))
+                {
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        isExist = reader.HasRows;
+                    }
+                }
+                con.Close();
+            }
+            return isExist;
         }
 
         private void CreateCountries()

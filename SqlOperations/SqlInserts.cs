@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Spectre.Console;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -27,7 +28,6 @@ namespace SqlOperations
             PushToLeagues();
             PushDataToSeasons();
         }
-
 
 
         private void PushToCountries()
