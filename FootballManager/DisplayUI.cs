@@ -152,7 +152,6 @@ namespace FootballManager
                         teamId = rowExist;
                     }
                 }
-                int counter = 0;
                 string queryy = $"select homeTeamId,awayTeamId,matchDate,FTR from Matches inner join Teams on Matches.homeTeamId = Teams.Id where Teams.Id = ('{teamId}')";
                 using (SqlCommand command = new SqlCommand(queryy, con))
                 {
@@ -171,11 +170,43 @@ namespace FootballManager
 
         private void DisplayAllMatchesForHomeWinOdds()
         {
-            string query = @"select Matches.Id,homeTeamId,awayTeamId,FTR,MatchOdds.interwettenHomeTeamWinOdds,MatchOdds.williamHillHomeTeamWinOdds
+
+            string query = @"select homeTeamId,awayTeamId,matchDate,FTR,MatchOdds.interwettenHomeTeamWinOdds,MatchOdds.williamHillHomeTeamWinOdds
                             from Matches
                             inner join MatchOdds on Matches.Id = MatchOdds.matchId
-                            where MatchOdds.interwettenHomeTeamWinOdds > 1.8 and MatchOdds.williamHillHomeTeamWinOdds > 1.8 
+                            where MatchOdds.interwettenHomeTeamWinOdds > 1.8 and MatchOdds.williamHillHomeTeamWinOdds > 1.8 and Matches.FTR = 'H'
                             order by MatchOdds.interwettenHomeTeamWinOdds";
+
+
+
+            var table = new Table();
+            table.Border(TableBorder.HeavyEdge);
+            table.AddColumn("Home Team");
+            table.AddColumn(new TableColumn("Away Team"));
+            table.AddColumn(new TableColumn("Date"));
+            table.AddColumn(new TableColumn("FTR"));
+            table.AddColumn(new TableColumn("InterwettenHomeTeamWinOdds"));
+            table.AddColumn(new TableColumn("WilliamHillHomeTeamWinOdds"));
+          
+            using (SqlConnection con = new SqlConnection(DatabaseConnectionString))
+            {
+                con.Open();
+                
+
+
+                using (SqlCommand command = new SqlCommand(query, con))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            table.AddRow(reader.GetInt32(0).ToString(), reader.GetInt32(1).ToString(), reader.GetDateTime(2).ToString(), reader.GetString(3).ToString(),reader.GetDecimal(4).ToString(),reader.GetDecimal(5).ToString());
+                        }
+                    }
+                }
+            }
+            AnsiConsole.Clear();
+            AnsiConsole.Write(table);
         }
 
         private void DisplayAllMatchesForHomeTeamLost()
@@ -259,6 +290,7 @@ namespace FootballManager
             "3. Display All Teams from a season",
             "4. Display All matches for home team",
             "5. Display All matches where home team lost",
+            "6. Display All matches ",
             "Q. Quit program"
                                     }));
         }
@@ -333,6 +365,11 @@ namespace FootballManager
                         Console.WriteLine("Press a key to continue...");
                         Console.ReadLine();
                         break;
+                    case '6':
+                        DisplayAllMatchesForHomeWinOdds();
+                        Console.WriteLine("Press a key to continue...");
+                        Console.ReadLine();
+                        break;
                     case 'Q':
                         loop = false;
                         break;
@@ -340,8 +377,6 @@ namespace FootballManager
                     default:
                         break;
                 }
-
-
             }
         }
     }
