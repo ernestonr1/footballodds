@@ -38,7 +38,21 @@ namespace SqlOperations
                         cmd.ExecuteNonQuery();
                     }
                 }
+
+                CreateAllTablesAndRelationships();
             }
+        }
+
+        private void CreateAllTablesAndRelationships()
+        {
+            CreateCountries();
+            CreateTeams();
+            CreateLeagues();
+            CreateSeasons();
+            CreateMatches();
+            CreateBettingCompanies();
+            CreateMatchOdds();
+            CreateRelations();
         }
 
 
@@ -62,7 +76,7 @@ namespace SqlOperations
             return isExist;
         }
 
-        private void CreateCountries()
+        public void CreateCountries()
         {
             using (SqlConnection con = new SqlConnection(ConnectionString))
             {
@@ -81,7 +95,7 @@ namespace SqlOperations
             }
         }
         //teams,leagues,seasons
-        private void CreateTeams()
+        public void CreateTeams()
         {
             using (SqlConnection con = new SqlConnection(ConnectionString))
             {
@@ -101,8 +115,8 @@ namespace SqlOperations
                 }
             }
         }
-
-        private void CreateLeagues()
+        
+        public void CreateLeagues()
         {
             using (SqlConnection con = new SqlConnection(ConnectionString))
             {
@@ -122,8 +136,8 @@ namespace SqlOperations
                 }
             }
         }
-
-        private void CreateSeasons()
+        
+        public void CreateSeasons()
         {
             using (SqlConnection con = new SqlConnection(ConnectionString))
             {
@@ -145,9 +159,9 @@ namespace SqlOperations
                 }
             }
         }
-
-
-        private void CreateMatches()
+        
+        
+        public void CreateMatches()
         {
             using (SqlConnection con = new SqlConnection(ConnectionString))
             {
@@ -157,6 +171,7 @@ namespace SqlOperations
 	                            [awayTeamId] [int] NOT NULL,
 	                            [seasonId] [int] NOT NULL,
 	                            [matchDate] [date] NOT NULL,
+                                [matchTime] [time](7) NULL,
 	                            [FTHG] [int] NOT NULL,
 	                            [FTAG] [int] NOT NULL,
 	                            [FTR] [nvarchar](50) NOT NULL,
@@ -164,6 +179,7 @@ namespace SqlOperations
 	                            [HTAG] [int] NOT NULL,
 	                            [HTR] [nvarchar](50) NOT NULL,
 	                            [REFEREE] [nvarchar](50) NULL,
+                                [Attendence] [int] NULL,
 	                            [HS] [int] NOT NULL,
 	                            [AS] [int] NOT NULL,
 	                            [HST] [int] NOT NULL,
@@ -180,7 +196,7 @@ namespace SqlOperations
                                 (
 	                            [Id] ASC
                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-                                ) ON [PRIMARY]]";
+                                ) ON [PRIMARY]";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     con.Open();
@@ -188,8 +204,8 @@ namespace SqlOperations
                 }
             }
         }
-
-        private void CreateBettingCompanies()
+        
+        public void CreateBettingCompanies()
         {
             using (SqlConnection con = new SqlConnection(ConnectionString))
             {
@@ -208,18 +224,21 @@ namespace SqlOperations
                 }
             }
         }
-
-        private void CreateMatchOdds()
+        
+        public void CreateMatchOdds()
         {
             using (SqlConnection con = new SqlConnection(ConnectionString))
             {
                 string query = @"CREATE TABLE [dbo].[MatchOdds](
 	                            [Id] [int] IDENTITY(1,1) NOT NULL,
 	                            [matchId] [int] NOT NULL,
-	                            [bettingCompanyId] [int] NOT NULL,
-	                            [homeTeamWinOdds] [decimal](18, 4) NULL,
-	                            [drawTeamWinOdds] [decimal](18, 4) NULL,
-	                            [awayTeamWinOdds] [decimal](18, 4) NULL,
+	                            [bettingCompanyId] [int] NULL,
+                                [interwettenHomeTeamWinOdds] [decimal](18, 4) NULL,
+	                            [interwettenDrawTeamWinOdds] [decimal](18, 4) NULL,
+	                            [interwettenAwayTeamWinOdds] [decimal](18, 4) NULL,
+	                            [williamHillHomeTeamWinOdds] [decimal](18, 4) NULL,
+	                            [williamHillDrawTeamWinOdds] [decimal](18, 4) NULL,
+	                            [williamHillAwayTeamWinOdds] [decimal](18, 4) NULL,
                                 CONSTRAINT [PK_MatchOdds] PRIMARY KEY CLUSTERED 
                                 (
 	                            [Id] ASC
@@ -233,46 +252,197 @@ namespace SqlOperations
             }
         }
 
-        private void CreateSpecificMatchData()
+        public void CreateRelations()
         {
             using (SqlConnection con = new SqlConnection(ConnectionString))
             {
-                string query = @"CREATE TABLE [dbo].[SpecificBettingOdds](
-	                           [Id] [int] IDENTITY(1,1) NOT NULL,
-	                           [matchId] [int] NULL,
-	                           [Bb1X2] [float] NULL,
-	                           [BbMxH] [float] NULL,
-	                           [BbAvH] [float] NULL,
-	                           [BbMxD] [float] NULL,
-	                           [BbAvD] [float] NULL,
-	                           [BbMxA] [float] NULL,
-	                           [BbAvA] [float] NULL,
-	                           [BbOU] [float] NULL,
-	                           [BbMxGT25] [float] NULL,
-	                           [BbAvGT25] [float] NULL,
-	                           [BbMxLT25] [float] NULL,
-	                           [BbAvLT25] [float] NULL,
-	                           [BbAH] [float] NULL,
-	                           [BbAHH] [float] NULL,
-	                           [BbMxAHH] [float] NULL,
-	                           [BbAvAHH] [float] NULL,
-	                           [BbMxAHA] [float] NULL,
-	                           [BbAvAHA] [float] NULL,
-	                           [PSCH] [float] NULL,
-	                           [PSCD] [float] NULL,
-	                           [PSCA] [float] NULL,
-                               CONSTRAINT [PK_SpecificBettingOdds] PRIMARY KEY CLUSTERED 
-                               (
-	                           [Id] ASC
-                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-                               ) ON [PRIMARY]";
+                string query = @"ALTER TABLE [dbo].[Leagues]  WITH CHECK ADD  CONSTRAINT [FK_Leagues_Countries] FOREIGN KEY([countryId])
+                                REFERENCES [dbo].[Countries] ([Id])";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     con.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
+
+            using(SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                string query = @"ALTER TABLE [dbo].[Leagues] CHECK CONSTRAINT [FK_Leagues_Countries]";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+
+                string query = @" ALTER TABLE [dbo].[Matches]  WITH CHECK ADD  CONSTRAINT [FK_Matches_Seasons] FOREIGN KEY([seasonId])
+                                REFERENCES [dbo].[Seasons] ([Id])";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                string query = @"ALTER TABLE [dbo].[Matches] CHECK CONSTRAINT [FK_Matches_Seasons]";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+
+                string query = @" ALTER TABLE [dbo].[Matches]  WITH CHECK ADD  CONSTRAINT [FK_Matches_Teams] FOREIGN KEY([homeTeamId])
+                                REFERENCES [dbo].[Teams] ([Id])";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+
+                string query = @"ALTER TABLE [dbo].[Matches] CHECK CONSTRAINT [FK_Matches_Teams]";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                string query = @"ALTER TABLE [dbo].[Matches]  WITH CHECK ADD  CONSTRAINT [FK_Matches_Teams1] FOREIGN KEY([awayTeamId])
+                                REFERENCES [dbo].[Teams] ([Id])";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                string query = @"ALTER TABLE [dbo].[Matches] CHECK CONSTRAINT [FK_Matches_Teams1]";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                string query = @"ALTER TABLE [dbo].[MatchOdds]  WITH CHECK ADD  CONSTRAINT [FK_MatchOdds_BettingCompanies] FOREIGN KEY([bettingCompanyId])
+                                REFERENCES [dbo].[BettingCompanies] ([Id])";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                                
+                string query = @"ALTER TABLE [dbo].[MatchOdds] CHECK CONSTRAINT [FK_MatchOdds_BettingCompanies]";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                string query = @"ALTER TABLE [dbo].[MatchOdds]  WITH CHECK ADD  CONSTRAINT [FK_MatchOdds_Matches] FOREIGN KEY([matchId])
+                                REFERENCES [dbo].[Matches] ([Id])";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                string query = @"ALTER TABLE [dbo].[MatchOdds] CHECK CONSTRAINT [FK_MatchOdds_Matches]";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+                string query = @"ALTER TABLE [dbo].[Seasons]  WITH CHECK ADD  CONSTRAINT [FK_Seasons_Leagues1] FOREIGN KEY([leagueId])
+                                REFERENCES [dbo].[Leagues] ([Id])";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+
+                string query = @"ALTER TABLE [dbo].[Seasons] CHECK CONSTRAINT [FK_Seasons_Leagues1]";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+
+                string query = @"ALTER TABLE [dbo].[Teams]  WITH CHECK ADD  CONSTRAINT [FK_Teams_Countries] FOREIGN KEY([CountryId])
+                                REFERENCES [dbo].[Countries] ([Id])";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            {
+
+                string query = @"ALTER TABLE [dbo].[Teams] CHECK CONSTRAINT [FK_Teams_Countries]";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+
         }
+
+
     }
 }
 

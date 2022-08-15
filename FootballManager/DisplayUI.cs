@@ -346,6 +346,8 @@ namespace FootballManager
                 {
                     case '1':
                         create.CreateDatabase();
+                        Console.WriteLine("Press a key to continue...");
+                        Console.ReadLine();
                         break;
                     case '2':
                         PopulateDatabase();
